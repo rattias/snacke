@@ -1,4 +1,4 @@
-import { EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_BLUE_TILE, EGG_GOLD_TILE, EGG_BLACK_TILE } from './constants.js';
+import { EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID } from './constants.js';
 import Phaser from './lib/phaser.js'
 import {SCREEN_WIDTH} from './constants.js'
 import { textSnacke, textDescription, textEgg, textPressAnyKeyToStart} from './text.js';
@@ -16,7 +16,7 @@ export default class Intro extends Phaser.Scene {
         var desc = textDescription(this)
         var egg_x = desc.x - desc.width/2
         var curr_y = desc.y + desc.height + 32
-        var egg_tiles = [EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_BLUE_TILE, EGG_GOLD_TILE, EGG_BLACK_TILE]
+        var egg_tiles = [EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID]
         var colors = ["#e5a45b", "#f4f4f4", "#2aaae7", "#ffee56", "#808080"]
         var objs = []
         for(let i=0; i<egg_tiles.length; i++) {

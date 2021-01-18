@@ -3,8 +3,8 @@ import Level from './level.js'
 import Snake from './snake.js'
 import {randomize, colorMix, energyFromValue, isMobile} from './util.js'
 import {mkText, textFullscreen, textWon, textGameOver, textPressAnyKeyToStart} from './text.js'
-import {TILE_WIDTH, TILE_HEIGHT, TILEMAP_X, TILEMAP_Y, TILEMAP_ROWS, TILEMAP_COLS, TILEMAP_HEIGHT, HEADER_ROWS, SCREEN_WIDTH, SCREEN_HEIGHT, EGG_BLACK_TILE} from './constants.js'
-import {LIFE_TILE, EGG_BLUE_TILE, EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_GOLD_TILE, EMPTY_TILE, GRASS_TILE} from './constants.js'
+import {TILE_WIDTH, TILE_HEIGHT, TILEMAP_X, TILEMAP_Y, TILEMAP_ROWS, TILEMAP_COLS, TILEMAP_HEIGHT, HEADER_ROWS, SCREEN_WIDTH, SCREEN_HEIGHT, EGG_BLACK_ID} from './constants.js'
+import {LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID, GRASS_ID} from './constants.js'
 import {ENERGY_BAR_X, ENERGY_BAR_Y, ENERGY_BAR_WIDTH, ENERGY_BAR_HEIGHT} from './constants.js'
 import {SNAKE_FIRST, SNAKE_LAST} from './constants.js'
 import {JOYSTICK_X, JOYSTICK_Y, JOYSTICK_SIDE} from './constants.js'
@@ -104,24 +104,24 @@ export default class Game extends Phaser.Scene {
         if("dyn_delay" in this.lv) {
             this.addEggDelay = this.lv.dyn_delay                            
             for(let i=0; i<this.lv.eggs.brown; i++)
-                this.eggsToAdd.push(EGG_BROWN_TILE)
+                this.eggsToAdd.push(EGG_BROWN_ID)
             for(let i=0; i<this.lv.eggs.white; i++)
-                this.eggsToAdd.push(EGG_WHITE_TILE)
+                this.eggsToAdd.push(EGG_WHITE_ID)
             for(let i=0; i<this.lv.eggs.blue; i++)
-                this.eggsToAdd.push(EGG_BLUE_TILE)
+                this.eggsToAdd.push(EGG_BLUE_ID)
             for(let i=0; i<this.lv.eggs.gold; i++)
-                this.eggsToAdd.push(EGG_GOLD_TILE)
+                this.eggsToAdd.push(EGG_GOLD_ID)
             for(let i=0; i<this.lv.eggs.black; i++)
-                this.eggsToAdd.push(EGG_BLACK_TILE)
+                this.eggsToAdd.push(EGG_BLACK_ID)
             randomize(this.eggsToAdd)
             this.eggs = 0
         } else {
             var lv = Level.getLevel(this.level)
-            this.addEggs(lv.eggs.brown, EGG_BROWN_TILE)
-            this.addEggs(lv.eggs.white, EGG_WHITE_TILE)
-            this.addEggs(lv.eggs.blue, EGG_BLUE_TILE)
-            this.addEggs(lv.eggs.gold, EGG_GOLD_TILE)
-            this.addEggs(lv.eggs.black, EGG_BLACK_TILE)
+            this.addEggs(lv.eggs.brown, EGG_BROWN_ID)
+            this.addEggs(lv.eggs.white, EGG_WHITE_ID)
+            this.addEggs(lv.eggs.blue, EGG_BLUE_ID)
+            this.addEggs(lv.eggs.gold, EGG_GOLD_ID)
+            this.addEggs(lv.eggs.black, EGG_BLACK_ID)
             // don't include black eggs
             this.eggs = this.lv.eggs.brown + this.lv.eggs.white + this.lv.eggs.blue + this.lv.eggs.gold
         }
@@ -137,7 +137,7 @@ export default class Game extends Phaser.Scene {
         // setup lives display
         this.livesImg = []
         for(let i=0; i<3; i++) {
-            var img = this.add.image((14 + i) * TILE_WIDTH, TILEMAP_Y/2, 'sprites', LIFE_TILE)
+            var img = this.add.image((14 + i) * TILE_WIDTH, TILEMAP_Y/2, 'sprites', LIFE_ID)
             img.setOrigin(.5).setScale(.8)
             this.livesImg.push(img)
         }
@@ -234,7 +234,7 @@ export default class Game extends Phaser.Scene {
             if (this.effectLeft === 0) {
                 this.resetEffect()
             } else {
-                if (this.effectType == EGG_BLACK_TILE) {
+                if (this.effectType == EGG_BLACK_ID) {
                     var xy = this.snake.getXY()
                     this.light.x = xy[0]
                     this.light.y = xy[1]
@@ -307,7 +307,7 @@ export default class Game extends Phaser.Scene {
             do {
                 var r = Phaser.Math.Between(1, TILEMAP_ROWS - 2)
                 var c = Phaser.Math.Between(1, TILEMAP_COLS - 2)
-            } while(this.getTileAt(c, r) != EMPTY_TILE)
+            } while(this.getTileAt(c, r) != EMPTY_ID)
             this.putTileAt(type, c, r)
         }
     }
@@ -332,16 +332,16 @@ export default class Game extends Phaser.Scene {
      */
     eatEgg(type, value, energy) {
         switch(type) {
-            case EGG_GOLD_TILE:
+            case EGG_GOLD_ID:
                 this.resetEffect()
-                this.effectType = EGG_GOLD_TILE
+                this.effectType = EGG_GOLD_ID
                 this.effectLeft = 100
                 this.snakeSpeed = 3 * DEFAULT_SNAKE_SPEED_TILES_PER_SEC
                 this.cameras.main.shake(10000, .001)
                 break
-            case EGG_BLACK_TILE:
+            case EGG_BLACK_ID:
                 this.resetEffect()
-                this.effectType = EGG_BLACK_TILE
+                this.effectType = EGG_BLACK_ID
                 this.mazeLayer.setPipeline("Light2D")
                 this.bgLayer.setPipeline("Light2D")
                 var xy = this.snake.getXY()
@@ -350,7 +350,7 @@ export default class Game extends Phaser.Scene {
                 this.effectLeft = 100
                 break
         }
-        if (type != EGG_BLACK_TILE) {
+        if (type != EGG_BLACK_ID) {
             this.eggs--
             this.sound.play("chomp_sound")
         } else {

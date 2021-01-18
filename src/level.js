@@ -1,5 +1,5 @@
 import Phaser from './lib/phaser.js'
-import {GRASS_TILE, WALL_TILE, EMPTY_TILE} from './constants.js'
+import {GRASS_ID, WALL_ID, EMPTY_ID} from './constants.js'
 import { TILEMAP_ROWS, TILEMAP_COLS, BUSH_ROWS, BUSH_COLS, NUM_V_ISLES, NUM_H_ISLES} from './constants.js'
 import { randomize } from './util.js'
 
@@ -26,26 +26,26 @@ export default class Level {
         lv.background = new Array(TILEMAP_ROWS)
         // create 2D arrays for background and foreground
         for(let i=0; i<TILEMAP_ROWS; i++) {
-            lv.tile_map[i] = new Array(TILEMAP_COLS).fill(EMPTY_TILE)
-            lv.background[i] = new Array(TILEMAP_COLS).fill(EMPTY_TILE)
+            lv.tile_map[i] = new Array(TILEMAP_COLS).fill(EMPTY_ID)
+            lv.background[i] = new Array(TILEMAP_COLS).fill(EMPTY_ID)
         }
         // paint background with grass
         for(let i=1; i < TILEMAP_ROWS - 1; i++) 
-            lv.background[i] = new Array(TILEMAP_COLS).fill(GRASS_TILE)
+            lv.background[i] = new Array(TILEMAP_COLS).fill(GRASS_ID)
         // initially fill maze with walls
         for(let i=0; i < lv.tile_map.length; i++) {
-            lv.tile_map[i] = new Array(TILEMAP_COLS).fill(WALL_TILE)
+            lv.tile_map[i] = new Array(TILEMAP_COLS).fill(WALL_ID)
         }
         // draw horizonal isles
         for(let i = 1; i < TILEMAP_ROWS - 1; i+= BUSH_ROWS + 1) {
             for(let j = 1; j < TILEMAP_COLS - 1; j++) {
-                lv.tile_map[i][j] = EMPTY_TILE
+                lv.tile_map[i][j] = EMPTY_ID
             }
         }
         // draw vertical isles
         for(let j = 1; j < TILEMAP_COLS - 1; j+= BUSH_COLS + 1) {
             for(let i = 1; i < TILEMAP_ROWS - 1; i++) {
-                lv.tile_map[i][j] = EMPTY_TILE
+                lv.tile_map[i][j] = EMPTY_ID
             }
         }
         // creates an array of sz entries, where each entry is 
@@ -66,14 +66,14 @@ export default class Level {
             var r =  1 +(pos[i].value + 1) * (BUSH_ROWS + 1)
             var c = 2 + pos[i].index * (BUSH_COLS + 1)
             for(let j=0; j<BUSH_COLS; j++)
-                lv.tile_map[r][c+j] = WALL_TILE
+                lv.tile_map[r][c+j] = WALL_ID
         }        
         pos = randPos(numBushRows, NUM_V_ISLES - 2)
         for(let i=0; i < Math.min(pos.length, lv.vwalls); i++) {
             var r = 2 + (pos[i].index * (BUSH_ROWS + 1))
             var c = 1 + (pos[i].value + 1) * (BUSH_COLS + 1)
             for(let j=0; j<BUSH_ROWS; j++)
-                lv.tile_map[r+j][c] = WALL_TILE
+                lv.tile_map[r+j][c] = WALL_ID
         }        
     }
 

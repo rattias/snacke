@@ -1,4 +1,4 @@
-import {EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_BLUE_TILE, EGG_GOLD_TILE, EGG_BLACK_TILE} from './constants.js'
+import {EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID} from './constants.js'
 import {EGG_BROWN_VALUE, EGG_WHITE_VALUE, EGG_BLUE_VALUE, EGG_GOLD_VALUE} from './constants.js'
 import {EGG_BROWN_LEN_INC, EGG_WHITE_LEN_INC, EGG_BLUE_LEN_INC, EGG_GOLD_LEN_INC} from './constants.js'
 import {TILEMAP_Y, SCREEN_WIDTH, TILEMAP_HEIGHT } from './constants.js'
@@ -47,15 +47,15 @@ export function textEgg(scene, y, egg) {
     var value, len, energy
 
     switch(egg) {
-        case EGG_BROWN_TILE: value = EGG_BROWN_VALUE; len = EGG_BROWN_LEN_INC; break;
-        case EGG_WHITE_TILE: value = EGG_WHITE_VALUE; len = EGG_WHITE_LEN_INC; break;
-        case EGG_BLUE_TILE: value = EGG_BLUE_VALUE; len = EGG_BLUE_LEN_INC; break;
-        case EGG_GOLD_TILE: value = EGG_GOLD_VALUE, len = EGG_GOLD_LEN_INC; break;
+        case EGG_BROWN_ID: value = EGG_BROWN_VALUE; len = EGG_BROWN_LEN_INC; break;
+        case EGG_WHITE_ID: value = EGG_WHITE_VALUE; len = EGG_WHITE_LEN_INC; break;
+        case EGG_BLUE_ID: value = EGG_BLUE_VALUE; len = EGG_BLUE_LEN_INC; break;
+        case EGG_GOLD_ID: value = EGG_GOLD_VALUE, len = EGG_GOLD_LEN_INC; break;
     }
     var energy = energyFromValue(value)
     var txt
-    if (egg != EGG_BLACK_TILE) {
-        txt = mkText(scene, 0, y, "   value: " + value+"; growth: "+len+"; energy: "+(energy*100)+"%" + (egg === EGG_GOLD_TILE ? 
+    if (egg != EGG_BLACK_ID) {
+        txt = mkText(scene, 0, y, "   value: " + value+"; growth: "+len+"; energy: "+(energy*100)+"%" + (egg === EGG_GOLD_ID ? 
         "; watch for the speed boost!" : ""), DESC_TEXT_STYLE);
     } else {
         txt = mkText(scene, 0, y, "   don't eat the rotten egg, you'll vision will be impaired for a while!", DESC_TEXT_STYLE)

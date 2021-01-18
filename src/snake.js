@@ -1,6 +1,6 @@
 import Phaser from './lib/phaser.js'
 import { TILE_HEIGHT, TILE_WIDTH} from './constants.js'
-import {EMPTY_TILE, WALL_TILE, EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_BLUE_TILE, EGG_GOLD_TILE, EGG_BLACK_TILE} from './constants.js'
+import {EMPTY_ID, WALL_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID} from './constants.js'
 import {SNAKE_START_LEN} from './constants.js'
 import {SNAKE_HEAD_R, SNAKE_HEAD_L, SNAKE_HEAD_U, SNAKE_HEAD_D} from './constants.js'
 import {SNAKE_BODY_R, SNAKE_BODY_L, SNAKE_BODY_U, SNAKE_BODY_D} from './constants.js'
@@ -91,18 +91,18 @@ export default class Snake {
     update() {
         var h = this.body[this.head]
         var tl = this.game.getTileAt(h[1]+this.nextDir[1], h[0]+this.nextDir[0])
-        if (tl != WALL_TILE)
+        if (tl != WALL_ID)
             this.dir = this.nextDir
         else {
             tl = this.game.getTileAt(h[1]+this.dir[1], h[0]+this.dir[0])
-            if (tl == WALL_TILE) {  
+            if (tl == WALL_ID) {  
                 var dirRight = this._rotate(this.dir)
                 var tileRight = this.game.getTileAt(h[1]+dirRight[1], h[0]+dirRight[0])
                 var dirLeft = this._mirror(dirRight)
                 var tileLeft = this.game.getTileAt(h[1]+dirLeft[1], h[0]+dirLeft[0])
-                if (tileLeft != WALL_TILE && tileRight != WALL_TILE)
+                if (tileLeft != WALL_ID && tileRight != WALL_ID)
                     return true
-                if (tileLeft != WALL_TILE) {
+                if (tileLeft != WALL_ID) {
                     this.nextDir = this.dir = dirLeft
                     tl = tileLeft
                 } else {
@@ -112,28 +112,28 @@ export default class Snake {
             }
         }
         switch (tl) {
-            case EMPTY_TILE:
+            case EMPTY_ID:
                 break
-            case EGG_BROWN_TILE:
+            case EGG_BROWN_ID:
                 this.body.splice(this.head+1, 0, ...Array(EGG_BROWN_LEN_INC).fill([-1, -1]))
-                this.game.eatEgg(EGG_BROWN_TILE, EGG_BROWN_VALUE, EGG_BROWN_VALUE / 1000)
+                this.game.eatEgg(EGG_BROWN_ID, EGG_BROWN_VALUE, EGG_BROWN_VALUE / 1000)
                 break
-            case EGG_WHITE_TILE:
+            case EGG_WHITE_ID:
                 this.body.splice(this.head+1, 0, ...Array(EGG_WHITE_LEN_INC).fill([-1, -1]))
-                this.game.eatEgg(EGG_WHITE_TILE, EGG_WHITE_VALUE, EGG_WHITE_VALUE / 1000)
+                this.game.eatEgg(EGG_WHITE_ID, EGG_WHITE_VALUE, EGG_WHITE_VALUE / 1000)
                 break
-            case EGG_BLUE_TILE:
+            case EGG_BLUE_ID:
                 this.body.splice(this.head+1, 0, ...Array(EGG_BLUE_LEN_INC).fill([-1, -1]))
-                this.game.eatEgg(EGG_BLUE_TILE, EGG_BLUE_VALUE, EGG_BLUE_VALUE / 1000)
+                this.game.eatEgg(EGG_BLUE_ID, EGG_BLUE_VALUE, EGG_BLUE_VALUE / 1000)
                 break
-            case EGG_GOLD_TILE:
-                this.game.eatEgg(EGG_GOLD_TILE, EGG_GOLD_VALUE, EGG_GOLD_VALUE / 1000)
+            case EGG_GOLD_ID:
+                this.game.eatEgg(EGG_GOLD_ID, EGG_GOLD_VALUE, EGG_GOLD_VALUE / 1000)
                 break
-            case EGG_BLACK_TILE:
-                this.game.eatEgg(EGG_BLACK_TILE, 0, 0)
+            case EGG_BLACK_ID:
+                this.game.eatEgg(EGG_BLACK_ID, 0, 0)
                 break
 
-            case WALL_TILE:
+            case WALL_ID:
                 // we've already rotate to avoid wall, so if we end up here
                 // we have walls on three sides. can only die.
                 return false
@@ -149,7 +149,7 @@ export default class Snake {
             var tl0 = this.game.getTileAt(tl0_coords[1], tl0_coords[0])
             var tl1 = this.game.getTileAt(tl1_coords[1], tl1_coords[0])
             var tl = tailMap.get(tl0 + "_" + tl1)
-            this.game.putTileAt(EMPTY_TILE, tl0_coords[1], tl0_coords[0])
+            this.game.putTileAt(EMPTY_ID, tl0_coords[1], tl0_coords[0])
             this.game.putTileAt(tl, tl1_coords[1], tl1_coords[0])
         }
 

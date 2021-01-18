@@ -19,14 +19,14 @@ export const ENERGY_BAR_HEIGHT = (TILEMAP_ROWS - 2) * TILE_HEIGHT
 
 export const SNAKE_START_LEN = 5
 
-export const GRASS_TILE = 0
-export const WALL_TILE = 1
+export const GRASS_ID = 0
+export const WALL_ID = 1
 export const EGG_START = 2
-export const EGG_BROWN_TILE = EGG_START
-export const EGG_WHITE_TILE = EGG_START + 1
-export const EGG_BLUE_TILE = EGG_START + 2
-export const EGG_GOLD_TILE = EGG_START + 3
-export const EGG_BLACK_TILE = EGG_START + 4
+export const EGG_BROWN_ID = EGG_START
+export const EGG_WHITE_ID = EGG_START + 1
+export const EGG_BLUE_ID = EGG_START + 2
+export const EGG_GOLD_ID = EGG_START + 3
+export const EGG_BLACK_ID = EGG_START + 4
 
 export const SNAKE_FIRST = 7
 export const SNAKE_HEAD_R = SNAKE_FIRST
@@ -47,8 +47,8 @@ export const SNAKE_CORNER_UR = SNAKE_FIRST + 14
 export const SNAKE_CORNER_UL = SNAKE_FIRST + 15
 export const SNAKE_LAST = SNAKE_CORNER_UL 
 
-export const LIFE_TILE = SNAKE_LAST + 1
-export const EMPTY_TILE = SNAKE_LAST + 2
+export const LIFE_ID = SNAKE_LAST + 1
+export const EMPTY_ID = SNAKE_LAST + 2
 
 export const EGG_BROWN_VALUE = 100
 export const EGG_WHITE_VALUE = 200
