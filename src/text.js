@@ -27,19 +27,18 @@ export function mkText(scene, x, y, text, config){
     return res
 }
 
-export function textSnake(scene) {
-    var txt = mkText(scene, scene.cameras.main.centerX, 100, "SNAKE", GAME_OVER_TEXT_STYLE);
+export function textSnacke(scene) {
+    var txt = mkText(scene, scene.cameras.main.centerX, 100, "SNAcKE", GAME_OVER_TEXT_STYLE);
     txt.setOrigin(0.5);
     return txt
 }
 
 export function textDescription(scene) {
     var txt = mkText(scene, scene.cameras.main.centerX, 100 + GAME_OVER_FS+30, 
-        "You're a snake who grows as it eats eggs. Make sure not to bite yourself, or you'll die!\n\n" +
-        "Your health decreases as time goes by, but increases when eating eggs. Keep an eye on the health bar on the right!\n\n" +
-        "Different eggs colors have different characteristics:", DESC_TEXT_STYLE);
+        "You're a snake who grows as it snacks on eggs. Don't bite yourself, or you'll die!\n\n" +
+        "Your health decreases as time passes, but increases when you eat. Keep an eye on the health bar on the right!\n\n" +
+        "Different eggs have different characteristics:", DESC_TEXT_STYLE);
     txt.setAlpha(0.0)
-//    txt.setAlign('justify')
     txt.setOrigin(0.5, 0);
     return txt
 }
@@ -56,9 +55,10 @@ export function textEgg(scene, y, egg) {
     var energy = energyFromValue(value)
     var txt
     if (egg != EGG_BLACK_TILE) {
-        txt = mkText(scene, 0, y, "   value: " + value+"; growth: "+len+"; energy: "+(energy*100)+"%", DESC_TEXT_STYLE);
+        txt = mkText(scene, 0, y, "   value: " + value+"; growth: "+len+"; energy: "+(energy*100)+"%" + (egg === EGG_GOLD_TILE ? 
+        "; watch for the speed boost!" : ""), DESC_TEXT_STYLE);
     } else {
-        txt = mkText(scene, 0, y, "   don't eat the rotten egg!", DESC_TEXT_STYLE)
+        txt = mkText(scene, 0, y, "   don't eat the rotten egg, you'll vision will be impaired for a while!", DESC_TEXT_STYLE)
     }
     txt.setOrigin(0, .5);
     txt.setAlpha(0)

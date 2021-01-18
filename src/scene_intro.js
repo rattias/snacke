@@ -1,7 +1,7 @@
 import { EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_BLUE_TILE, EGG_GOLD_TILE, EGG_BLACK_TILE } from './constants.js';
 import Phaser from './lib/phaser.js'
 import {SCREEN_WIDTH} from './constants.js'
-import { textSnake, textDescription, textEgg, textPressAnyKeyToStart} from './text.js';
+import { textSnacke, textDescription, textEgg, textPressAnyKeyToStart} from './text.js';
 import { onTouchOrKeyOnce } from './input.js'
 import Game from './scene_game.js'
 const DURATION = 500
@@ -12,19 +12,21 @@ export default class Intro extends Phaser.Scene {
     }
 
     create() {
-        var title = textSnake(this)
+        var title = textSnacke(this)
         var desc = textDescription(this)
         var egg_x = desc.x - desc.width/2
-        var egg_y = desc.y + desc.height + 32
+        var curr_y = desc.y + desc.height + 32
         var egg_tiles = [EGG_BROWN_TILE, EGG_WHITE_TILE, EGG_BLUE_TILE, EGG_GOLD_TILE, EGG_BLACK_TILE]
         var colors = ["#e5a45b", "#f4f4f4", "#2aaae7", "#ffee56", "#808080"]
         var objs = []
         for(let i=0; i<egg_tiles.length; i++) {
-            var egg = this.add.sprite(0, egg_y + 50 * i, 'tiles', egg_tiles[i]);
-            egg.setOrigin(0, 0.5)
+            var egg = this.add.sprite(0, curr_y + 8, 'tiles', egg_tiles[i]);
+            egg.setOrigin(0)
             egg.alpha = 0
-            var txt = textEgg(this, egg_y + 50 * i, egg_tiles[i])
+            var txt = textEgg(this, curr_y, egg_tiles[i])
             txt.setFill(colors[i])
+            txt.setOrigin(0)
+            curr_y += txt.height + 20
             objs.push(egg)
             objs.push(txt)
         }

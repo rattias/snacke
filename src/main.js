@@ -1,5 +1,4 @@
 import Phaser from './lib/phaser.js'
-import Game from './scene_game.js'
 import Intro from './scene_intro.js'
 import {SCREEN_WIDTH, SCREEN_HEIGHT} from './constants.js'
 

@@ -45,7 +45,7 @@ export default class Game extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('platform', 'assets/Environment/ground_grass.png')
+    //    this.load.image('platform', 'assets/Environment/ground_grass.png')
         this.load.image('tiles', 'assets/tiles.png');
         this.load.audio('music', 'assets/Audio/music.wav');
         this.load.audio('bleah_sound', 'assets/Audio/bleah.wav')
