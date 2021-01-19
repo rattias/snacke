@@ -5,7 +5,7 @@ import {TILEMAP_Y, SCREEN_WIDTH, TILEMAP_HEIGHT } from './constants.js'
 import {isMobile, energyFromValue} from "./util.js"
 
 const GAME_OVER_FS = 80
-const GAME_OVER_TEXT_STYLE = {fontFamily: "Arial Black", fontSize: GAME_OVER_FS, color: '#3030FF', stroke: '#FFFFFF', strokeThickness: 3}
+const GAME_OVER_TEXT_STYLE = {fontFamily: "Arial Black", fontSize: GAME_OVER_FS, color: '#FF3030', stroke: '#FFFFFF', strokeThickness: 3}
 const RELOAD_TEXT_STYLE =  {fontFamily: "Arial Black", fontSize: GAME_OVER_FS/2, color: '#3030FF'}
 const DESC_TEXT_STYLE = {fontFamily: "Arial Black", fontSize: GAME_OVER_FS/2, color: '#903030', wordWrap: { width : SCREEN_WIDTH-60}}
 
@@ -94,10 +94,6 @@ export function textGameOver(scene) {
     var gameOver = mkText(scene, SCREEN_WIDTH/2, (TILEMAP_Y + TILEMAP_HEIGHT) / 2, "Game Over", GAME_OVER_TEXT_STYLE);
     gameOver.setAlpha(0.0)
     gameOver.setOrigin(0.5);
-    var reload = mkText(scene, scene.cameras.main.centerX, scene.cameras.main.centerY + GAME_OVER_FS, "Reload to play again", RELOAD_TEXT_STYLE);
-    reload.setAlpha(0.0)
-    reload.setOrigin(0.5);
     scene.tweens.add(tweenConfig(gameOver))
-    scene.tweens.add(tweenConfig(reload))
-    return [gameOver, reload]
+    return gameOver
 }

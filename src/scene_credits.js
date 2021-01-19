@@ -1,5 +1,8 @@
 import Phaser from './lib/phaser.js'
-import {SCREEN_WIDTH, SCREEN_HEIGHT} from './constants.js'
+import {SCREEN_WIDTH} from './constants.js'
+import {mkText} from './text.js'
+import {buttonize, switchToScene} from './util.js'
+
 const DURATION = 500
 
 export default class Credits extends Phaser.Scene {
@@ -42,7 +45,16 @@ export default class Credits extends Phaser.Scene {
         var lr = goRight[goRight.length-1]
         var nStyle = {fontFamily: "Arial Black", fontSize: 30, color: '#A05020', wordWrap: { width : SCREEN_WIDTH-60}}
 
-        this.add.text(20, lr.y + lr.displayHeight + 50, "Special thanks to the Phaser3 developers and community!\n\nCode available at https://github.com/rattias/snacke", nStyle)
+        var note = this.add.text(20, lr.y + lr.displayHeight + 50, "Special thanks to the Phaser3 developers and community!\n\nCode available at https://github.com/rattias/snacke", nStyle)
+
+        var back = mkText(this, SCREEN_WIDTH/2, note.y + note.displayHeight + 50, "Back", {fontFamily: "Arial Black", fontSize: 50, color: '#008000', backgroundColor: '#303030'})
+        console.log(back.x, back.y, back.displayWidth, back.displayHeight)
+        back.setOrigin(.5, 0)
+        var scene = this
+        buttonize(back, function() {
+            switchToScene(scene, 'intro')
+        })
+
     }
 
 }

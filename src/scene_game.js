@@ -1,7 +1,7 @@
 import Phaser from './lib/phaser.js'
 import Level from './level.js'
 import Snake from './snake.js'
-import {randomize, colorMix, energyFromValue, isMobile} from './util.js'
+import {randomize, colorMix, energyFromValue, isMobile, switchToScene} from './util.js'
 import {mkText, textFullscreen, textWon, textGameOver, textPressAnyKeyToStart} from './text.js'
 import {TILE_WIDTH, TILE_HEIGHT, TILEMAP_X, TILEMAP_Y, TILEMAP_ROWS, TILEMAP_COLS, TILEMAP_HEIGHT, HEADER_ROWS, SCREEN_WIDTH, SCREEN_HEIGHT, EGG_BLACK_ID} from './constants.js'
 import {LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID, GRASS_ID} from './constants.js'
@@ -250,6 +250,7 @@ export default class Game extends Phaser.Scene {
         this.music = null
         if (this.lives === 0) {
             textGameOver(this)
+            this.time.delayedCall(3000, switchToScene, [this, 'intro'])
         } else
             this.time.delayedCall(3000, this._setupLevel, [], this); 
         this.running = false

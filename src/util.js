@@ -57,3 +57,20 @@ export function onTouchOrKeyOnce(scene, handler) {
     }
 }
 
+export function switchToScene(currScene, nextSceneName) {
+    currScene.cameras.main.fadeOut(500, 0, 0, 0)
+    currScene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+        currScene.scene.start(nextSceneName)
+    })
+}
+
+export function buttonize(txt, onClick) {
+    txt.setInteractive({ useHandCursor: true })
+    txt.on(Phaser.Input.Events.POINTER_OVER, function() {
+        txt.setStyle({color: '#00FF00', backgroundColor: '#606060'})
+    }, this)
+    txt.on(Phaser.Input.Events.POINTER_OUT, function() {
+        txt.setStyle({color: '#008000', backgroundColor: '#303030'})
+    }, this)
+    txt.on(Phaser.Input.Events.POINTER_DOWN, onClick, this)
+}

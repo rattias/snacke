@@ -2,9 +2,8 @@ import { EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID } fr
 import Phaser from './lib/phaser.js'
 import {SCREEN_WIDTH} from './constants.js'
 import { textSnacke, textDescription, textEgg, textPressAnyKeyToStart, mkText} from './text.js';
-import { onTouchOrKeyOnce } from './util.js'
-import Game from './scene_game.js'
-import Credits from './scene_credits.js'
+import { buttonize, switchToScene } from './util.js'
+
 const DURATION = 500
 
 export default class Intro extends Phaser.Scene {
@@ -15,17 +14,6 @@ export default class Intro extends Phaser.Scene {
 
     preload() {
         this.load.spritesheet('tiles', 'assets/tiles.png', { frameWidth: 34, frameHeight: 34 });        
-    }
-
-    _buttonize(txt, onClick) {
-        txt.setInteractive({ useHandCursor: true })
-        txt.on(Phaser.Input.Events.POINTER_OVER, function() {
-            txt.setStyle({color: '#00FF00', backgroundColor: '#606060'})
-        }, this)
-        txt.on(Phaser.Input.Events.POINTER_OUT, function() {
-            txt.setStyle({color: '#008000', backgroundColor: '#303030'})
-        }, this)
-        txt.on(Phaser.Input.Events.POINTER_DOWN, onClick, this)
     }
 
     create() {
@@ -50,31 +38,27 @@ export default class Intro extends Phaser.Scene {
         var currScene = this
         var last = objs[objs.length - 1]
 
-        var anyKey = textPressAnyKeyToStart(this)
-        anyKey.setFill("#006000")
-        anyKey.y = last.y + last.height + 80
-
-        var credits = mkText(this, SCREEN_WIDTH/2, anyKey.y + anyKey.height + 50, "Show Credits", {fontFamily: "Arial Black", fontSize: 30, color: '#008000', backgroundColor: '#303030'})
-        credits.setOrigin(.5, 0)
-        this._buttonize(credits, function() {
+        var startGame = mkText(this, SCREEN_WIDTH/2, last.y + last.height + 80, "Start Game", {fontFamily: "Arial Black", fontSize: 50, color: '#008000', backgroundColor: '#303030'})
+        startGame.setOrigin(.5, 0).setAlpha(0)
+        var scene = this
+        buttonize(startGame, function() {
             currScene.cameras.main.fadeOut(500, 0, 0, 0)
             currScene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-                this.scene.start('credits')
+                switchToScene.start(scene, 'game')
             })
+        })
+
+        var credits = mkText(this, SCREEN_WIDTH/2, startGame.y + startGame.height + 50, "Show Credits", {fontFamily: "Arial Black", fontSize: 50, color: '#008000', backgroundColor: '#303030'})
+        credits.setOrigin(.5, 0).setAlpha(0)
+        buttonize(credits, function() {
+            switchToScene(scene, 'credits')
         })
         
         var timeline = this.tweens.createTimeline();
         timeline.add({targets: title, scale:{from: 0, to: 1}, alpha:{from: 0, to: 1}, ease: 'Power1', duration: DURATION, repeat: 0})
         timeline.add({targets: desc, scale:{from: 0, to: 1.0}, alpha:{from:0, to: 1}, ease: 'Power1', duration: DURATION, repeat: 0})
         timeline.add({targets: objs, alpha:{from: 0, to: 1}, x:{from: 0, to: egg_x}, ease: 'Power1', duration: DURATION, repeat: 0})
-        timeline.add({targets: [anyKey], alpha:{from: 0, to: 1}, x:{from: 0, to: SCREEN_WIDTH/2}, ease: 'Power1', duration: DURATION, repeat: 0})
+        timeline.add({targets: [startGame, credits], alpha:{from: 0, to: 1}, x:{from: 0, to: SCREEN_WIDTH/2}, ease: 'Power1', duration: DURATION, repeat: 0})
         timeline.play()
-        onTouchOrKeyOnce(this, function () {
-            currScene.cameras.main.fadeOut(500, 0, 0, 0)
-            currScene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-                var game = currScene.scene.start('game');
-            })
-        })
-
     }
 }
