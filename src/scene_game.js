@@ -106,6 +106,7 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
+        this.cameras.main.fadeIn(500, 0, 0, 0)
         // setup score and level headers
         this.scoreTxt = mkText(this, 10, 0, "Score: 0", HEADER_TEXT_STYLE).setOrigin(0, 0)
         this.scoreTxt.y = (TILEMAP_Y - this.scoreTxt.displayHeight)/2

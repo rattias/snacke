@@ -1,5 +1,7 @@
 import Phaser from './lib/phaser.js'
 import Intro from './scene_intro.js'
+import Credits from './scene_credits.js'
+import Game from './scene_game.js'
 import {SCREEN_WIDTH, SCREEN_HEIGHT} from './constants.js'
 
 export default new Phaser.Game({
@@ -14,5 +16,8 @@ export default new Phaser.Game({
     audio: {
         disableWebAudio: true
     },
-    scene: Intro,
+    dom: {
+        createContainer: true
+    },
+    scene: [Intro, Credits, Game]
 })
