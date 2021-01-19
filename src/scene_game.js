@@ -6,42 +6,20 @@ import {mkText, textFullscreen, textWon, textGameOver, textPressAnyKeyToStart} f
 import {TILE_WIDTH, TILE_HEIGHT, TILEMAP_X, TILEMAP_Y, TILEMAP_ROWS, TILEMAP_COLS, TILEMAP_HEIGHT, HEADER_ROWS, SCREEN_WIDTH, SCREEN_HEIGHT, EGG_BLACK_ID} from './constants.js'
 import {LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID, GRASS_ID} from './constants.js'
 import {ENERGY_BAR_X, ENERGY_BAR_Y, ENERGY_BAR_WIDTH, ENERGY_BAR_HEIGHT} from './constants.js'
-import {SNAKE_FIRST, SNAKE_LAST} from './constants.js'
-import {JOYSTICK_X, JOYSTICK_Y, JOYSTICK_SIDE} from './constants.js'
-import DirInput, { onTouchOrKeyOnce } from './input.js'
-import Joystick from './joystick.js'
 import Keypad from './keypad.js'
 
 const HEADER_TEXT_STYLE = {fontFamily: "Arial Black", fontSize: 32, color: '#3030FF'}
-const DBG_TEXT_STYLE = {fontFamily: "Arial Black", fontSize: 15, color: '#000000', stroke: '#000000', strokeThickness: 1}
-const LAYER_BACKGROUND = 0
-const LAYER_FOREGROUND = 1
 const DEFAULT_SNAKE_SPEED_TILES_PER_SEC = 10
 
 export default class Game extends Phaser.Scene {
-    /** @type {number} current level */
-    level = 0
-
-    /** @type {number} number of snakes left (including current) */
-    lives = 3
-
-    /** @type {number} amount of energy left */
-    energy
-
-    /** @type {number} burn rate */
-    burnRate = .005
-
-    /** @type { object } number of remaining eggs */
-    eggs = null
-
-    /** @type { number } current score */
-    score = 0
-
-   /** @type { Phaser.Tilemaps.TilemapLayer } tilemap layer */
-   mazeLayer
-
     constructor() {
         super('game')
+        this.level = 0
+        this.lives = 3
+        this.energy = 1
+        this.burnRate = .005
+        this.eggs = null
+        this.score = 0
     }
 
     preload() {
@@ -155,7 +133,7 @@ export default class Game extends Phaser.Scene {
         )
         this.energyBarOutline.setOrigin(0, 0)
         this.energyBarOutline.setStrokeStyle(2, 0xefc53f);
-        this.dirInput = new DirInput(this)
+  //      this.dirInput = new DirInput(this)
         this.fps =  mkText(this, 0, SCREEN_HEIGHT, "0", {fontSize: 50})
         this.fps.setOrigin(0, 1)
         

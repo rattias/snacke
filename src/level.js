@@ -2,26 +2,26 @@ import Phaser from './lib/phaser.js'
 import {GRASS_ID, WALL_ID, EMPTY_ID} from './constants.js'
 import { TILEMAP_ROWS, TILEMAP_COLS, BUSH_ROWS, BUSH_COLS, NUM_V_ISLES, NUM_H_ISLES} from './constants.js'
 import { randomize } from './util.js'
+const DATA = [
+    {eggs: {brown: 4,  white: 2, blue: 1, gold: 1, black: 1}, hwalls: 1, vwalls: 1},
+    {eggs: {brown: 6,  white: 2, blue: 1, gold: 0, black: 0}, hwalls: 2, vwalls: 2},
+    {eggs: {brown: 8,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 3, vwalls: 3},
+    {eggs: {brown: 10, white: 2, blue: 1, gold: 1, black: 0}, hwalls: 4, vwalls: 4},
+    {eggs: {brown: 6,  white: 4, blue: 4, gold: 0, black: 1}, hwalls: 5, vwalls: 5},
+    {eggs: {brown: 6,  white: 4, blue: 4, gold: 0, black: 1}, hwalls: 5, vwalls: 5},
+    {eggs: {brown: 4,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 5, vwalls: 5, dyn_eggs: 2, dyn_delay: 2000},
+    {eggs: {brown: 6,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 2000},
+    {eggs: {brown: 8,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 3000},
+]
 
 export default class Level {
-    static _data = [
-        {eggs: {brown: 4,  white: 2, blue: 1, gold: 1, black: 1}, hwalls: 1, vwalls: 1},
-        {eggs: {brown: 6,  white: 2, blue: 1, gold: 0, black: 0}, hwalls: 2, vwalls: 2},
-        {eggs: {brown: 8,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 3, vwalls: 3},
-        {eggs: {brown: 10, white: 2, blue: 1, gold: 1, black: 0}, hwalls: 4, vwalls: 4},
-        {eggs: {brown: 6,  white: 4, blue: 4, gold: 0, black: 1}, hwalls: 5, vwalls: 5},
-        {eggs: {brown: 6,  white: 4, blue: 4, gold: 0, black: 1}, hwalls: 5, vwalls: 5},
-        {eggs: {brown: 4,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 5, vwalls: 5, dyn_eggs: 2, dyn_delay: 2000},
-        {eggs: {brown: 6,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 2000},
-        {eggs: {brown: 8,  white: 2, blue: 1, gold: 1, black: 0}, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 3000},
-    ]
 
     /** 
      * Create maze structure.
      * @param {number idx} level index
      */
     static _makeMaze(idx)  {
-        var lv = Level._data[idx]
+        var lv = DATA[idx]
         lv.tile_map = new Array(TILEMAP_ROWS)
         lv.background = new Array(TILEMAP_ROWS)
         // create 2D arrays for background and foreground
@@ -82,13 +82,13 @@ export default class Level {
      * @returns {Array<Array<number>> tile data}
      */
     static getLevel(idx) {
-        if(Level._data[idx].tile_map == undefined) {
+        if(DATA[idx].tile_map == undefined) {
             Level._makeMaze(idx)
         }
-        return Level._data[idx]
+        return DATA[idx]
     }
 
     static isLast(idx) {
-        return idx == Level._data.length - 1
+        return idx == DATA.length - 1
     }
 }    

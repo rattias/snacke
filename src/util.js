@@ -40,3 +40,20 @@ export function isMobile(scene) {
 export function energyFromValue(value) {
     return value / 1000
 }
+
+export function onTouchOrKeyOnce(scene, handler) {
+    if(isMobile(scene)) {
+        function mobileWrapper(pointer) {
+            handler();
+            scene.input.off('pointerdown', mobileWrapper)
+        }
+        scene.input.on('pointerdown', mobileWrapper)
+    } else {
+        function desktopWrapper(evemt) {
+            handler();
+            scene.input.keyboard.off('keydown', desktopWrapper)
+        }
+        scene.input.keyboard.on('keydown', desktopWrapper)
+    }
+}
+

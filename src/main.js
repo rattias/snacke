@@ -11,5 +11,8 @@ export default new Phaser.Game({
         width:  SCREEN_WIDTH,
         height: SCREEN_HEIGHT
     },
+    audio: {
+        disableWebAudio: true
+    },
     scene: Intro,
 })

@@ -1,9 +1,6 @@
 import { SCREEN_WIDTH } from './constants.js'
 import Phaser from './lib/phaser.js'
 export default class Keypad {
-    static MODE_JOYSTICK = 1
-    static MODE_KEYPAD = 2
-
     _setDir(d, p) {
         this.dir = d
         if (d[0] != 0 || d[1] != 0) {

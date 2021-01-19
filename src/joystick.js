@@ -1,8 +1,5 @@
 import Phaser from './lib/phaser.js'
 export default class Joystick {
-    static MODE_JOYSTICK = 1
-    static MODE_KEYPAD = 2
-
     _setDir(d) {
         this.dir = d
         this.stick.x = this.x + this.size/2 + d[1] * this.size/4

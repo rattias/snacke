@@ -2,7 +2,7 @@ import { EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID } fr
 import Phaser from './lib/phaser.js'
 import {SCREEN_WIDTH} from './constants.js'
 import { textSnacke, textDescription, textEgg, textPressAnyKeyToStart} from './text.js';
-import { onTouchOrKeyOnce } from './input.js'
+import { onTouchOrKeyOnce } from './util.js'
 import Game from './scene_game.js'
 const DURATION = 500
 
