@@ -6,7 +6,7 @@ export const NUM_H_ISLES = 8
 export const BUSH_ROWS = 3
 export const BUSH_COLS = 4
 export const TILEMAP_COLS = (BUSH_COLS + 1) * (NUM_V_ISLES - 1) + 3
-export const TILEMAP_ROWS = (BUSH_ROWS + 1)* (NUM_H_ISLES - 1) + 3
+export const TILEMAP_ROWS = (BUSH_ROWS + 1) * (NUM_H_ISLES - 1) + 3
 export const TILEMAP_X = 0
 export const TILEMAP_Y = HEADER_ROWS * TILE_HEIGHT
 export const TILEMAP_WIDTH = TILEMAP_COLS * TILE_WIDTH
@@ -45,7 +45,7 @@ export const SNAKE_CORNER_BL = SNAKE_FIRST + 12
 export const SNAKE_CORNER_BR = SNAKE_FIRST + 13
 export const SNAKE_CORNER_UR = SNAKE_FIRST + 14
 export const SNAKE_CORNER_UL = SNAKE_FIRST + 15
-export const SNAKE_LAST = SNAKE_CORNER_UL 
+export const SNAKE_LAST = SNAKE_CORNER_UL
 
 export const LIFE_ID = SNAKE_LAST + 1
 export const EMPTY_ID = SNAKE_LAST + 2
@@ -62,9 +62,8 @@ export const EGG_GOLD_LEN_INC = 0
 export const SCREEN_WIDTH = (TILEMAP_COLS + 1) * TILE_HEIGHT
 
 export const JOYSTICK_Y_OFFSET = 10
-export const JOYSTICK_SIDE = SCREEN_WIDTH/2
+export const JOYSTICK_SIDE = SCREEN_WIDTH / 2
 export const JOYSTICK_Y = Math.floor(TILEMAP_Y + TILEMAP_HEIGHT + JOYSTICK_Y_OFFSET)
 
 export const JOYSTICK_X = (SCREEN_WIDTH - JOYSTICK_SIDE) / 2
 export const SCREEN_HEIGHT = HEADER_ROWS * TILE_HEIGHT + TILEMAP_HEIGHT + JOYSTICK_Y_OFFSET + JOYSTICK_SIDE
-
