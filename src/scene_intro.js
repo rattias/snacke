@@ -41,14 +41,14 @@ export default class Intro extends Phaser.Scene {
     const scene = this
     buttonize(startGame, function () {
       switchToScene(scene, 'game')
-    })
+    }, '#008000', '#303030', '#00FF00', '#606060')
 
     const credits = mkText(this, SCREEN_WIDTH / 2, startGame.y + startGame.height + 50, 'Show Credits', { fontFamily: 'Arial Black', fontSize: 50, color: '#008000', backgroundColor: '#303030' })
     credits.setOrigin(0.5, 0).setAlpha(0)
     buttonize(credits, function () {
       switchToScene(scene, 'credits')
-    })
-
+    }, '#008000', '#303030', '#00FF00', '#606060')
+    
     const timeline = this.tweens.createTimeline()
     timeline.add({ targets: title, scale: { from: 0, to: 1 }, alpha: { from: 0, to: 1 }, ease: 'Power1', duration: DURATION, repeat: 0 })
     timeline.add({ targets: desc, scale: { from: 0, to: 1.0 }, alpha: { from: 0, to: 1 }, ease: 'Power1', duration: DURATION, repeat: 0 })

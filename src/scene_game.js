@@ -9,6 +9,7 @@ import Keypad from './keypad.js'
 
 const HEADER_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: 32, color: '#3030FF' }
 const DEFAULT_SNAKE_SPEED_TILES_PER_SEC = 10
+const DEBUG_FPS = false
 
 export default class Game extends Phaser.Scene {
   constructor () {
@@ -142,8 +143,10 @@ export default class Game extends Phaser.Scene {
     )
     this.energyBarOutline.setOrigin(0, 0)
     this.energyBarOutline.setStrokeStyle(2, 0xefc53f)
-    this.fps = mkText(this, 0, SCREEN_HEIGHT, '0', { fontSize: 50 })
-    this.fps.setOrigin(0, 1)
+    if (DEBUG_FPS) {
+      this.fps = mkText(this, 0, SCREEN_HEIGHT, '0', { fontSize: 50 })
+      this.fps.setOrigin(0, 1)
+    }
 
     // foullscreen button
     const button = this.add.image(SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, 'fullscreen', 0).setOrigin(0, 0).setInteractive().setOrigin(1)
@@ -187,7 +190,9 @@ export default class Game extends Phaser.Scene {
   }
 
   update (time, delta) {
-    this.fps.setText(Math.round(this.game.loop.actualFps) + 'FPS')
+    if (DEBUG_FPS) {
+      this.fps.setText(Math.round(this.game.loop.actualFps) + 'FPS')
+    }
     if (!this.running) {
       return
     }

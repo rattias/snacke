@@ -58,13 +58,27 @@ export function switchToScene (currScene, nextSceneName) {
   })
 }
 
-export function buttonize (txt, onClick) {
-  txt.setInteractive({ useHandCursor: true })
-  txt.on(Phaser.Input.Events.POINTER_OVER, function () {
-    txt.setStyle({ color: '#00FF00', backgroundColor: '#606060' })
+export function buttonize (obj, onClick, color, bgColor, overColor, overBgColor) {
+  obj.setInteractive({ useHandCursor: true })
+  obj.on(Phaser.Input.Events.POINTER_OVER, function () {
+    obj.setStyle({ color: overColor, backgroundColor: overBgColor })
   }, this)
-  txt.on(Phaser.Input.Events.POINTER_OUT, function () {
-    txt.setStyle({ color: '#008000', backgroundColor: '#303030' })
+  obj.on(Phaser.Input.Events.POINTER_OUT, function () {
+    obj.setStyle({ color: color, backgroundColor: bgColor })
   }, this)
-  txt.on(Phaser.Input.Events.POINTER_DOWN, onClick, this)
+  obj.on(Phaser.Input.Events.POINTER_DOWN, onClick, this)
+}
+
+export function linkify (obj, url, color, bgColor, overColor, overBgColor) {
+  buttonize(obj, function () { navigate(url) }, color, bgColor, overColor, overBgColor)
+}
+
+export function navigate (url) {
+  console.log("navigating to " + url)
+  const s = window.open(url, '_blank')
+  if (s && s.focus) {
+    s.focus()
+  } else if (!s) {
+    window.location.href = url
+  }
 }
