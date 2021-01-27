@@ -1,7 +1,8 @@
 import Phaser from './lib/phaser.js'
-import { SCREEN_WIDTH } from './constants.js'
 import { mkText } from './text.js'
 import { buttonize, linkify, switchToScene } from './util.js'
+import { DEFAULT_WIDTH } from './constants.js'
+
 const REPO = 'https://github.com/rattias/snacke'
 
 export default class Credits extends Phaser.Scene {
@@ -13,6 +14,7 @@ export default class Credits extends Phaser.Scene {
   }
 
   create () {
+    const SCREEN_WIDTH = DEFAULT_WIDTH
     this.cameras.main.fadeIn(500, 0, 0, 0)
     const r0 = this.add.text(SCREEN_WIDTH / 2, 0, 'CREDITS', { fontFamily: 'Arial Black', fontSize: 80, color: '#FF0000', stroke: '#FFFFFF', strokeThickness: 3 }).setOrigin(0.5, 0)
     const txt = [
@@ -54,8 +56,8 @@ export default class Credits extends Phaser.Scene {
 
     const note = this.add.text(20, lr.y + lr.displayHeight + 50, 'Special thanks to the Phaser3 developers and community!\n\nCode available at', nStyle)
     const github = this.add.text(20, note.y + note.displayHeight, REPO, nStyle)
-    linkify(github, REPO , '#A05020', '#000000', '#D08050', '#000000')
-    github.setStyle({ backgroundColor: '#000000'})
+    linkify(github, REPO, '#A05020', '#000000', '#D08050', '#000000')
+    github.setStyle({ backgroundColor: '#000000' })
     const back = mkText(this, SCREEN_WIDTH / 2, github.y + github.displayHeight + 50, 'Back', { fontFamily: 'Arial Black', fontSize: 50, color: '#008000', backgroundColor: '#303030' })
     console.log(back.x, back.y, back.displayWidth, back.displayHeight)
     back.setOrigin(0.5, 0)

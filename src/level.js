@@ -1,4 +1,4 @@
-import { GRASS_ID, WALL_ID, EMPTY_ID, TILEMAP_ROWS, TILEMAP_COLS, BUSH_ROWS, BUSH_COLS, NUM_V_ISLES, NUM_H_ISLES } from './constants.js'
+import { GRASS_ID, WALL_ID, EMPTY_ID } from './constants.js'
 
 import { randomize } from './util.js'
 const DATA = [
@@ -18,32 +18,33 @@ export default class Level {
      * Create maze structure.
      * @param {number idx} level index
      */
-  static _makeMaze (idx) {
+  static _makeMaze (idx, lo) {
+    console.log(JSON.stringify(lo))
     const lv = DATA[idx]
-    lv.tile_map = new Array(TILEMAP_ROWS)
-    lv.background = new Array(TILEMAP_ROWS)
+    lv.tile_map = new Array(lo.mazeRows)
+    lv.background = new Array(lo.mazeRows)
     // create 2D arrays for background and foreground
-    for (let i = 0; i < TILEMAP_ROWS; i++) {
-      lv.tile_map[i] = new Array(TILEMAP_COLS).fill(EMPTY_ID)
-      lv.background[i] = new Array(TILEMAP_COLS).fill(EMPTY_ID)
+    for (let i = 0; i < lo.mazeRows; i++) {
+      lv.tile_map[i] = new Array(lo.mazeCols).fill(EMPTY_ID)
+      lv.background[i] = new Array(lo.mazeCols).fill(EMPTY_ID)
     }
     // paint background with grass
-    for (let i = 1; i < TILEMAP_ROWS - 1; i++) {
-      lv.background[i] = new Array(TILEMAP_COLS).fill(GRASS_ID)
+    for (let i = 1; i < lo.mazeRows - 1; i++) {
+      lv.background[i] = new Array(lo.mazeCols).fill(GRASS_ID)
     }
     // initially fill maze with walls
-    for (let i = 0; i < lv.tile_map.length; i++) {
-      lv.tile_map[i] = new Array(TILEMAP_COLS).fill(WALL_ID)
+    for (let i = 0; i < lo.mazeRows; i++) {
+      lv.tile_map[i] = new Array(lo.mazeCols).fill(WALL_ID)
     }
     // draw horizonal isles
-    for (let i = 1; i < TILEMAP_ROWS - 1; i += BUSH_ROWS + 1) {
-      for (let j = 1; j < TILEMAP_COLS - 1; j++) {
+    for (let i = 1; i < lo.mazeRows - 1; i += lo.bushRows + 1) {
+      for (let j = 1; j < lo.mazeCols - 1; j++) {
         lv.tile_map[i][j] = EMPTY_ID
       }
     }
     // draw vertical isles
-    for (let j = 1; j < TILEMAP_COLS - 1; j += BUSH_COLS + 1) {
-      for (let i = 1; i < TILEMAP_ROWS - 1; i++) {
+    for (let j = 1; j < lo.mazeCols - 1; j += lo.bushCols + 1) {
+      for (let i = 1; i < lo.mazeRows - 1; i++) {
         lv.tile_map[i][j] = EMPTY_ID
       }
     }
@@ -58,21 +59,21 @@ export default class Level {
       }
       return randomize(arr)
     }
-    const numBushCols = NUM_V_ISLES - 1
-    const numBushRows = NUM_H_ISLES - 1
-    let pos = randPos(numBushCols, NUM_H_ISLES - 2)
+    const numBushCols = lo.vIsles - 1
+    const numBushRows = lo.hIsles - 1
+    let pos = randPos(numBushCols, lo.hIsles - 2)
     for (let i = 0; i < Math.min(pos.length, lv.hwalls); i++) {
-      const r = 1 + (pos[i].value + 1) * (BUSH_ROWS + 1)
-      const c = 2 + pos[i].index * (BUSH_COLS + 1)
-      for (let j = 0; j < BUSH_COLS; j++) {
+      const r = 1 + (pos[i].value + 1) * (lo.bushRows + 1)
+      const c = 2 + pos[i].index * (lo.bushCols + 1)
+      for (let j = 0; j < lo.bushCols; j++) {
         lv.tile_map[r][c + j] = WALL_ID
       }
     }
-    pos = randPos(numBushRows, NUM_V_ISLES - 2)
+    pos = randPos(numBushRows, lo.vIsles - 2)
     for (let i = 0; i < Math.min(pos.length, lv.vwalls); i++) {
-      const r = 2 + (pos[i].index * (BUSH_ROWS + 1))
-      const c = 1 + (pos[i].value + 1) * (BUSH_COLS + 1)
-      for (let j = 0; j < BUSH_ROWS; j++) {
+      const r = 2 + (pos[i].index * (lo.bushRows + 1))
+      const c = 1 + (pos[i].value + 1) * (lo.bushCols + 1)
+      for (let j = 0; j < lo.bushRows; j++) {
         lv.tile_map[r + j][c] = WALL_ID
       }
     }
@@ -81,9 +82,9 @@ export default class Level {
   /**
      * @returns {Array<Array<number>> tile data}
      */
-  static getLevel (idx) {
+  static getLevel (idx, lo) {
     if (DATA[idx].tile_map === undefined) {
-      Level._makeMaze(idx)
+      Level._makeMaze(idx, lo)
     }
     return DATA[idx]
   }

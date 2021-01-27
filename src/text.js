@@ -2,14 +2,14 @@ import {
   EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID,
   EGG_BROWN_VALUE, EGG_WHITE_VALUE, EGG_BLUE_VALUE, EGG_GOLD_VALUE,
   EGG_BROWN_LEN_INC, EGG_WHITE_LEN_INC, EGG_BLUE_LEN_INC, EGG_GOLD_LEN_INC,
-  TILEMAP_Y, SCREEN_WIDTH, TILEMAP_HEIGHT
+  DEFAULT_WIDTH
 } from './constants.js'
 import { isMobile, energyFromValue } from './util.js'
 
 const GAME_OVER_FS = 80
 const GAME_OVER_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: GAME_OVER_FS, color: '#FF3030', stroke: '#FFFFFF', strokeThickness: 3 }
 const RELOAD_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: GAME_OVER_FS / 2, color: '#3030FF' }
-const DESC_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: GAME_OVER_FS / 2, color: '#903030', wordWrap: { width: SCREEN_WIDTH - 60 } }
+const DESC_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: GAME_OVER_FS / 2, color: '#903030', wordWrap: { width: DEFAULT_WIDTH - 60 } }
 
 function tweenConfig (target) {
   return {
@@ -94,7 +94,7 @@ export function textWon (scene) {
 }
 
 export function textGameOver (scene) {
-  const gameOver = mkText(scene, SCREEN_WIDTH / 2, (TILEMAP_Y + TILEMAP_HEIGHT) / 2, 'Game Over', GAME_OVER_TEXT_STYLE)
+  const gameOver = mkText(scene, scene.lo.width / 2, (scene.lo.mazeY + scene.lo.mazeHeight) / 2, 'Game Over', GAME_OVER_TEXT_STYLE)
   gameOver.setAlpha(0.0)
   gameOver.setOrigin(0.5)
   scene.tweens.add(tweenConfig(gameOver))

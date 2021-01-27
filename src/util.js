@@ -66,7 +66,7 @@ export function buttonize (obj, onClick, color, bgColor, overColor, overBgColor)
   obj.on(Phaser.Input.Events.POINTER_OUT, function () {
     obj.setStyle({ color: color, backgroundColor: bgColor })
   }, this)
-  obj.on(Phaser.Input.Events.POINTER_DOWN, onClick, this)
+  obj.on(Phaser.Input.Events.POINTER_UP, onClick, this)
 }
 
 export function linkify (obj, url, color, bgColor, overColor, overBgColor) {
@@ -74,7 +74,7 @@ export function linkify (obj, url, color, bgColor, overColor, overBgColor) {
 }
 
 export function navigate (url) {
-  console.log("navigating to " + url)
+  console.log('navigating to ' + url)
   const s = window.open(url, '_blank')
   if (s && s.focus) {
     s.focus()

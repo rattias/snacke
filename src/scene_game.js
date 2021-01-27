@@ -1,15 +1,15 @@
 import Phaser from './lib/phaser.js'
 import Level from './level.js'
 import Snake from './snake.js'
-import { randomize, colorMix, switchToScene } from './util.js'
+import { randomize, colorMix, switchToScene, isMobile } from './util.js'
 import { mkText, textWon, textGameOver } from './text.js'
-import { TILE_WIDTH, TILE_HEIGHT, TILEMAP_X, TILEMAP_Y, TILEMAP_ROWS, TILEMAP_COLS, TILEMAP_HEIGHT, HEADER_ROWS, SCREEN_WIDTH, SCREEN_HEIGHT, EGG_BLACK_ID, LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID, ENERGY_BAR_X, ENERGY_BAR_Y, ENERGY_BAR_WIDTH, ENERGY_BAR_HEIGHT } from './constants.js'
+import { TILE_WIDTH, TILE_HEIGHT, HEADER_ROWS, EGG_BLACK_ID, LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID } from './constants.js'
 
 import Keypad from './keypad.js'
 
 const HEADER_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: 32, color: '#3030FF' }
 const DEFAULT_SNAKE_SPEED_TILES_PER_SEC = 10
-const DEBUG_FPS = false
+const DEBUG_FPS = true
 
 export default class Game extends Phaser.Scene {
   constructor () {
@@ -35,15 +35,95 @@ export default class Game extends Phaser.Scene {
     this.load.image('redball', 'assets/redball.png')
   }
 
+  _mazeSide (isles, bushSize) {
+    return isles * (bushSize + 1) + 3
+  }
+
+  _layout (size) {
+    const res = {}
+    res.headerHeight = HEADER_ROWS * TILE_HEIGHT
+    res.mazeX = 0
+    res.mazeY = res.headerHeight
+
+    const mazeVsKeypadHeightPercent = isMobile(this) ? 0.66 : 1
+    // first, we decide whether the window has a portrait or landscape orientation.
+    // In the former case, we do 8 horizontal isles and 6 vertical ones. In the latter case,
+    // the opposite.
+    const ar = (window.innerHeight * mazeVsKeypadHeightPercent) / window.innerWidth
+    if (ar > 1) {
+      res.hIsles = 8
+      res.vIsles = 6
+      if (Math.abs(this._mazeSide(8, 3) / this._mazeSide(6, 4) - ar) <
+        Math.abs(this._mazeSide(8, 4) / this._mazeSide(6, 3) - ar)) {
+        res.bushCols = 4
+        res.bushRows = 3
+      } else {
+        res.bushCols = 3
+        res.bushRows = 4
+      }
+    } else {
+      res.hIsles = 6
+      res.vIsles = 8
+      if (Math.abs(this._mazeSide(6, 3) / this._mazeSide(8, 4) - ar) <
+        Math.abs(this._mazeSide(6, 4) / this._mazeSide(8, 3) - ar)) {
+        res.bushCols = 4
+        res.bushRows = 3
+      } else {
+        res.bushCols = 3
+        res.bushRows = 4
+      }
+    }
+    res.mazeCols = this._mazeSide(res.vIsles, res.bushCols)
+    res.mazeRows = this._mazeSide(res.hIsles, res.bushRows)
+    res.mazeWidth = res.mazeCols * TILE_WIDTH
+    res.mazeHeight = res.mazeRows * TILE_HEIGHT
+    res.mazeX = 0
+    res.mazeY = res.headerHeight
+
+    res.scoreTxtX = 10
+    res.scoreTxtY = res.mazeY / 2
+    res.scoreTxtOX = 0
+    res.scoreTxtOY = 0.5
+
+    res.levelTxtX = res.mazeX + res.mazeWidth - 1
+    res.levelTxtY = res.scoreTxtY
+    res.levelTxtOX = 1
+    res.levelTxtOY = 0.5
+
+    res.livesX = res.mazeX + res.mazeWidth / 2
+    res.livesY = res.scoreTxtY
+    res.livesOX = 0
+    res.livesOY = 0.5
+
+    res.energyBarX = res.mazeX + res.mazeWidth
+    res.energyBarY = res.mazeY + res.mazeHeight - 1
+    res.energyBarOX = 0
+    res.eneryBarOY = 1
+    res.energyBarWidth = TILE_WIDTH
+    res.energyBarHeight = res.mazeHeight
+
+    res.width = (res.mazeCols + 1) * TILE_WIDTH
+    res.height = Math.floor(res.mazeHeight / mazeVsKeypadHeightPercent) + res.headerHeight
+    const PADDING = 20
+    if (isMobile(this)) {
+      res.kpadSide = Math.floor(res.height - res.headerHeight - res.mazeHeight - 2 * PADDING)
+    } else {
+      res.kpadSide = 0
+    }
+    res.kpadX = res.width / 2
+    res.kpadY = Math.floor(res.headerHeight + res.mazeHeight + PADDING + res.kpadSide / 2)
+    this.lo = res
+    return res
+  }
+
   /**
      * setup a level
      */
   _setupLevel () {
     this.resetEffect()
-    this.lv = Level.getLevel(this.level)
+    this.lv = Level.getLevel(this.level, this.lo)
     this.bgLayer.putTilesAt(this.lv.background, 0, 0, true)
     this.mazeLayer.putTilesAt(this.lv.tile_map, 0, 0, true)
-
     this.levelTxt.setText('Level: ' + (this.level + 1))
     this.snake = new Snake(this)
     // update lives
@@ -60,20 +140,24 @@ export default class Game extends Phaser.Scene {
     this.energy = 1.0
     this.updateEnergyBar()
     const txt = []
-    const lvl = mkText(this, SCREEN_WIDTH / 2, (TILEMAP_Y + TILEMAP_HEIGHT) / 2, 'Level ' + (this.level + 1), { fontFamily: 'Arial Black', fontSize: 80 })
+    const mazeCenterX = (this.lo.mazeX + this.lo.mazeWidth) / 2
+    const mazeCenterY = (this.lo.mazeY + this.lo.mazeHeight) / 2
+    const lvl = mkText(this, mazeCenterX, mazeCenterY, 'Level ' + (this.level + 1), { fontFamily: 'Arial Black', fontSize: 80 })
     lvl.setOrigin(0.5)
     const msg = ['3', '2', '1', 'Go!']
     const timeline = this.tweens.createTimeline()
     for (let i = 0; i < msg.length; i++) {
-      txt.push(mkText(this, SCREEN_WIDTH / 2, (TILEMAP_Y + TILEMAP_HEIGHT) / 2 + lvl.height + 4, msg[i], { fontFamily: 'Arial Black', fontSize: 70 }))
+      txt.push(mkText(this, mazeCenterX, mazeCenterY + lvl.height + 4, msg[i], { fontFamily: 'Arial Black', fontSize: 70 }))
       txt[i].alpha = 0
       txt[i].setOrigin(0.5)
       timeline.add({ targets: txt[i], scale: { from: 0, to: 1 }, alpha: { from: 0, to: 1 }, ease: 'Power1', duration: 500, repeat: 0, yoyo: true })
     }
     timeline.on('complete', function () {
       this.running = true
-      console.log('COMPLETED')
       lvl.destroy()
+      for (let i = 0; i < msg.length; i++) {
+        txt[i].destroy()
+      }
     }, this)
     timeline.play()
   }
@@ -115,65 +199,51 @@ export default class Game extends Phaser.Scene {
   }
 
   create () {
+    const lo = this._layout(this.scale.gameSize)
+    this.scale.setGameSize(lo.width, lo.height)
+
     this.cameras.main.fadeIn(500, 0, 0, 0)
     // setup score and level headers
-    this.scoreTxt = mkText(this, 10, 0, 'Score: 0', HEADER_TEXT_STYLE).setOrigin(0, 0)
-    this.scoreTxt.y = (TILEMAP_Y - this.scoreTxt.displayHeight) / 2
-    this.levelTxt = mkText(this, SCREEN_WIDTH - 11, 0, 'Level: 1', HEADER_TEXT_STYLE).setOrigin(1, 0)
-    this.levelTxt.y = this.scoreTxt.y
+    this.scoreTxt = mkText(this, lo.scoreTxtX, lo.scoreTxtY, 'Score: 0', HEADER_TEXT_STYLE).setOrigin(lo.scoreTxtOX, lo.scoreTxtOY)
+    this.levelTxt = mkText(this, lo.levelTxtX, lo.levelTxtY, 'Level: 1', HEADER_TEXT_STYLE).setOrigin(lo.levelTxtOX, lo.levelTxtOY)
 
     // setup lives display
     this.livesImg = []
     for (let i = 0; i < 3; i++) {
-      const img = this.add.image((14 + i) * TILE_WIDTH, TILEMAP_Y / 2, 'sprites', LIFE_ID)
-      img.setOrigin(0.5).setScale(0.8)
+      const img = this.add.image(lo.livesX + i * TILE_WIDTH, lo.livesY, 'sprites', LIFE_ID).setOrigin(lo.livesOX, lo.livesOY)
       this.livesImg.push(img)
     }
     // setup energy bar
     this.energyBar = this.add.rectangle(
-      ENERGY_BAR_X, ENERGY_BAR_Y,
-      ENERGY_BAR_WIDTH, ENERGY_BAR_HEIGHT,
+      lo.energyBarX, lo.energyBarY,
+      lo.energyBarWidth, lo.energyBarHeight,
       0x6666ff, 1
     )
-    this.energyBar.setOrigin(0, 0)
+    this.energyBar.setOrigin(lo.energyBarOX, lo.eneryBarOY)
     this.energyBarOutline = this.add.rectangle(
-      ENERGY_BAR_X, ENERGY_BAR_Y,
-      ENERGY_BAR_WIDTH, ENERGY_BAR_HEIGHT,
+      lo.energyBarX, lo.energyBarY,
+      lo.energyBarWidth, lo.energyBarHeight,
       0x6666ff, 0
     )
-    this.energyBarOutline.setOrigin(0, 0)
+    this.energyBarOutline.setOrigin(lo.energyBarOX, lo.eneryBarOY)
     this.energyBarOutline.setStrokeStyle(2, 0xefc53f)
-    if (DEBUG_FPS) {
-      this.fps = mkText(this, 0, SCREEN_HEIGHT, '0', { fontSize: 50 })
-      this.fps.setOrigin(0, 1)
-    }
 
-    // foullscreen button
-    const button = this.add.image(SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, 'fullscreen', 0).setOrigin(0, 0).setInteractive().setOrigin(1)
-    button.on('pointerup', function () {
-      if (this.scale.isFullscreen) {
-        button.setFrame(0)
-        this.scale.stopFullscreen()
-      } else {
-        button.setFrame(1)
-        this.scale.startFullscreen()
-      }
-    }, this)
-
-    const vArea = SCREEN_HEIGHT - (TILEMAP_Y + TILEMAP_HEIGHT)
-    const kpadSide = vArea > SCREEN_WIDTH ? SCREEN_WIDTH : vArea - 20
-    this.controller = new Keypad(this, SCREEN_WIDTH / 2, SCREEN_HEIGHT - 1 - vArea / 2, kpadSide, kpadSide)
+    this.controller = new Keypad(this, this.lo.kpadX, this.lo.kpadY, this.lo.kpadSide, this.lo.kpadSide)
 
     this.map = this.make.tilemap({
       tileWidth: TILE_WIDTH,
       tileHeight: TILE_HEIGHT,
-      width: TILEMAP_COLS,
-      height: HEADER_ROWS + TILEMAP_ROWS
+      width: lo.mazeCols,
+      height: lo.mazeRows
     })
     const tileset = this.map.addTilesetImage('tiles', null, TILE_WIDTH, TILE_HEIGHT, 1, 2)
-    this.bgLayer = this.map.createBlankLayer('background', tileset, TILEMAP_X, TILEMAP_Y)
-    this.mazeLayer = this.map.createBlankLayer('foreground', tileset, TILEMAP_X, TILEMAP_Y)
+    this.bgLayer = this.map.createBlankLayer('background', tileset, this.lo.mazeX, this.lo.mazeY)
+    this.mazeLayer = this.map.createBlankLayer('foreground', tileset, this.lo.mazeX, this.lo.mazeY)
     this._setupLevel()
+    if (DEBUG_FPS) {
+      this.fps = mkText(this, 0, this.lo.height, '0', { fontSize: 50 })
+      this.fps.setOrigin(0, 1)
+    }
   }
 
   /**
@@ -214,9 +284,11 @@ export default class Game extends Phaser.Scene {
         }
       }
     }
-    const d = this.controller.getDir()
-    if (d[0] !== 0 || d[1] !== 0) {
-      this.snake.setDir(d)
+    if (this.controller) {
+      const d = this.controller.getDir()
+      if (d[0] !== 0 || d[1] !== 0) {
+        this.snake.setDir(d)
+      }
     }
 
     this.elapsed += delta
@@ -251,8 +323,8 @@ export default class Game extends Phaser.Scene {
      */
   updateEnergyBar () {
     this.energyBar.fillColor = colorMix(0x0000FF, 0xFF4040, this.energy)
-    this.energyBar.y = ENERGY_BAR_Y + ENERGY_BAR_HEIGHT * (1 - this.energy)
-    this.energyBar.height = ENERGY_BAR_HEIGHT * this.energy
+    this.energyBar.height = this.lo.energyBarHeight * this.energy
+    this.energyBar.setOrigin(0, 1)
   }
 
   /**
@@ -302,8 +374,8 @@ export default class Game extends Phaser.Scene {
       let r
       let c
       do {
-        r = Phaser.Math.Between(1, TILEMAP_ROWS - 2)
-        c = Phaser.Math.Between(1, TILEMAP_COLS - 2)
+        r = Phaser.Math.Between(1, this.lo.mazeRows - 2)
+        c = Phaser.Math.Between(1, this.lo.mazeCols - 2)
       } while (this.getTileAt(c, r) !== EMPTY_ID)
       this.putTileAt(type, c, r)
     }
