@@ -36,7 +36,11 @@ export const SNAKE_CORNER_UL = SNAKE_FIRST + 15
 export const SNAKE_LAST = SNAKE_CORNER_UL
 
 export const LIFE_ID = SNAKE_LAST + 1
-export const EMPTY_ID = SNAKE_LAST + 2
+
+export const HOLE_BACKGROUND = LIFE_ID + 1
+export const HOLE_FOREGROUND_START = HOLE_BACKGROUND + 1
+
+export const EMPTY_ID = HOLE_FOREGROUND_START + 5
 
 export const EGG_BROWN_VALUE = 100
 export const EGG_WHITE_VALUE = 200

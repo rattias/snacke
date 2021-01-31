@@ -1,4 +1,4 @@
-import { EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID, DEFAULT_WIDTH } from './constants.js'
+import { EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT } from './constants.js'
 import Phaser from './lib/phaser.js'
 
 import { textSnacke, textDescription, textEgg, mkText } from './text.js'
@@ -16,6 +16,15 @@ export default class Intro extends Phaser.Scene {
   }
 
   create () {
+    /*
+    const game = this.game
+    this.events.once('once') {
+      game.origGameWidth = game.width
+      game.origGameHeight = game.height
+    }*/
+    this.scale.setGameSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+
+    console.log("### crating intro scene")
     mkText(this, 0, 0, window.innerWidth + 'X' + window.innerHeight).setOrigin(0)
     const title = textSnacke(this)
     const desc = textDescription(this)

@@ -3,7 +3,7 @@ import Level from './level.js'
 import Snake from './snake.js'
 import { randomize, colorMix, switchToScene, isMobile } from './util.js'
 import { mkText, textWon, textGameOver } from './text.js'
-import { TILE_WIDTH, TILE_HEIGHT, HEADER_ROWS, EGG_BLACK_ID, LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID } from './constants.js'
+import { TILE_WIDTH, TILE_HEIGHT, HEADER_ROWS, EGG_BLACK_ID, LIFE_ID, EGG_BLUE_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_GOLD_ID, EMPTY_ID, HOLE_FOREGROUND_START, HOLE_BACKGROUND } from './constants.js'
 
 import Keypad from './keypad.js'
 
@@ -124,6 +124,7 @@ export default class Game extends Phaser.Scene {
     this.lv = Level.getLevel(this.level, this.lo)
     this.bgLayer.putTilesAt(this.lv.background, 0, 0, true)
     this.mazeLayer.putTilesAt(this.lv.tile_map, 0, 0, true)
+    this.fgLayer.fill(EMPTY_ID, 0, 0, this.lo.mazeCols, this.lo.mazeRows)
     this.levelTxt.setText('Level: ' + (this.level + 1))
     this.snake = new Snake(this)
     // update lives
@@ -137,6 +138,7 @@ export default class Game extends Phaser.Scene {
     this.music = this.sound.add('music')
     this.music.play({ loop: true })
     this.initEggs()
+    this.addHoles(this.lv.holes)
     this.energy = 1.0
     this.updateEnergyBar()
     const txt = []
@@ -163,8 +165,8 @@ export default class Game extends Phaser.Scene {
   }
 
   /**
-     * initializes eggs
-     */
+   * initializes eggs
+   */
   initEggs () {
     this.eggsToAdd = []
     if ('dyn_delay' in this.lv) {
@@ -238,7 +240,8 @@ export default class Game extends Phaser.Scene {
     })
     const tileset = this.map.addTilesetImage('tiles', null, TILE_WIDTH, TILE_HEIGHT, 1, 2)
     this.bgLayer = this.map.createBlankLayer('background', tileset, this.lo.mazeX, this.lo.mazeY)
-    this.mazeLayer = this.map.createBlankLayer('foreground', tileset, this.lo.mazeX, this.lo.mazeY)
+    this.mazeLayer = this.map.createBlankLayer('maze', tileset, this.lo.mazeX, this.lo.mazeY)
+    this.fgLayer = this.map.createBlankLayer('foreground', tileset, this.lo.mazeX, this.lo.mazeY)
     this._setupLevel()
     if (DEBUG_FPS) {
       this.fps = mkText(this, 0, this.lo.height, '0', { fontSize: 50 })
@@ -345,30 +348,46 @@ export default class Game extends Phaser.Scene {
   }
 
   /**
-     * @param { number } r
-     * @param { number } c
-     * @return { number }
-     */
+   * @param { number } type
+   * @param { number } r
+   * @param { number } c
+   */
+  putTileAt (type, x, y) {
+    return this.map.putTileAt(type, x, y, true, this.mazeLayer)
+  }
+
+  /**
+   * @param { number } type
+   * @param { number } r
+   * @param { number } c
+   */
+  putBackgroundTileAt (type, x, y) {
+    return this.map.putTileAt(type, x, y, true, this.bgLayer)
+  }
+
+  putForegroundTileAt (type, x, y) {
+    return this.map.putTileAt(type, x, y, true, this.fgLayer)
+  }
+
+  /**
+   * @param { number } r
+   * @param { number } c
+   * @return { number }
+   */
   getTileAt (x, y) {
-    return this.map.getTileAt(x, y).index
+    return this.map.getTileAt(x, y, true, this.mazeLayer).index
+  }
+
+  getBackgroundTileAt (x, y) {
+    return this.map.getTileAt(x, y, true, this.bgLayer).index
   }
 
   /**
-     *
-     * @param { number } idx
-     * @param { number } r
-     * @param { number } c
-     */
-  putTileAt (idx, x, y) {
-    this.map.putTileAt(idx, x, y)
-  }
-
-  /**
-     * Add a number of eggs of a given type to the screen,
-     * avoiding collision with walls, snake or other eggs.
-     * @param { number } number number of eggs to add
-     * @param { number } type the tile type of the eggs
-     */
+    * Add a number of eggs of a given type to the screen,
+    * avoiding collision with walls, snake or other eggs.
+    * @param { number } number number of eggs to add
+    * @param { number } type the tile type of the eggs
+    */
   addEggs (cnt, type) {
     for (let i = 0; i < cnt; i++) {
       let r
@@ -379,6 +398,42 @@ export default class Game extends Phaser.Scene {
       } while (this.getTileAt(c, r) !== EMPTY_ID)
       this.putTileAt(type, c, r)
     }
+  }
+
+  /**
+    * Add holes avoiding collision with other objects
+    * @param { number } number number of holes to add
+    */
+  addHoles (cnt) {
+    if (!cnt) {
+      return
+    }
+    this.holes = []
+    for (let i = 0; i < cnt; i += 2) {
+      let r0, c0, r1, c1
+      do {
+        r0 = 1 + Phaser.Math.Between(1, this.lo.hIsles - 2) * (this.lo.bushRows + 1)
+        c0 = 1 + Phaser.Math.Between(1, this.lo.vIsles - 2) * (this.lo.bushCols + 1)
+      } while (this.getTileAt(c0, r0) !== EMPTY_ID || this.getBackgroundTileAt(c0, r0) === HOLE_BACKGROUND)
+      const v0 = { r: r0, c: c0 }
+      this.holes.push(v0)
+      this.putBackgroundTileAt(HOLE_BACKGROUND, c0, r0)
+      this.putForegroundTileAt(HOLE_FOREGROUND_START + i, c0, r0)
+      do {
+        r1 = 1 + Phaser.Math.Between(1, this.lo.hIsles - 2) * (this.lo.bushRows + 1)
+        c1 = 1 + Phaser.Math.Between(1, this.lo.vIsles - 2) * (this.lo.bushCols + 1)
+      } while (this.getTileAt(c1, r1) !== EMPTY_ID || this.getBackgroundTileAt(c1, r1) === HOLE_BACKGROUND ||
+              (r0 === r1 && Math.abs(c1 - c0) === this.lo.bushCols + 1) || (c0 === c1 && Math.abs(r1 - r0) === this.lo.bushRows + 1))
+      const v1 = { r: r1, c: c1 }
+      this.holes.push(v1)
+      this.putBackgroundTileAt(HOLE_BACKGROUND, c1, r1)
+      this.putForegroundTileAt(HOLE_FOREGROUND_START + i, c1, r1)
+      v0.other = v1
+      v1.other = v0
+    }
+    const len = this.holes.length
+    this.holes[len - 2].other = this.holes[len - 1]
+    this.holes[len - 1].other = this.holes[len - 2]
   }
 
   resetEffect () {

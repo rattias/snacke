@@ -3,7 +3,7 @@ import {
   EMPTY_ID, WALL_ID, EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID,
   SNAKE_START_LEN,
   SNAKE_HEAD_R, SNAKE_HEAD_L, SNAKE_HEAD_U, SNAKE_HEAD_D, SNAKE_BODY_R, SNAKE_BODY_L, SNAKE_BODY_U, SNAKE_BODY_D, SNAKE_TAIL_R, SNAKE_TAIL_L, SNAKE_TAIL_U, SNAKE_TAIL_D, SNAKE_CORNER_UL, SNAKE_CORNER_UR, SNAKE_CORNER_BL, SNAKE_CORNER_BR,
-  EGG_BROWN_VALUE, EGG_WHITE_VALUE, EGG_BLUE_VALUE, EGG_GOLD_VALUE, EGG_BROWN_LEN_INC, EGG_WHITE_LEN_INC, EGG_BLUE_LEN_INC
+  EGG_BROWN_VALUE, EGG_WHITE_VALUE, EGG_BLUE_VALUE, EGG_GOLD_VALUE, EGG_BROWN_LEN_INC, EGG_WHITE_LEN_INC, EGG_BLUE_LEN_INC, HOLE_BACKGROUND
 } from './constants.js'
 
 const tailMap = new Map([
@@ -55,11 +55,11 @@ export default class Snake {
     this.game.putTileAt(SNAKE_TAIL_R, this.body[0][1], this.body[0][0])
     this.game.putTileAt(SNAKE_HEAD_R, this.body[this.body.length - 1][1], this.body[this.body.length - 1][0])
     this.nextDir = [0, 1]
+    this.lastHeadTile = SNAKE_HEAD_R
   }
 
   setDir (d) {
     if (d[0] === -this.dir[0] && d[1] === -this.dir[1]) {
-      console.log("can't go back")
       return
     }
     this.nextDir = d
@@ -83,7 +83,18 @@ export default class Snake {
     * @returns { Boolean } true unless the snake died.
     */
   update () {
-    const h = this.body[this.head]
+    let h = this.body[this.head]
+    if (this.game.getBackgroundTileAt(h[1], h[0]) === HOLE_BACKGROUND) {
+      const holes = this.game.holes
+      for (let i = 0; i < holes.length; i++) {
+        if (holes[i].r === h[0] && holes[i].c === h[1]) {
+          this.game.putTileAt(EMPTY_ID, h[1], h[0])
+          h = [holes[i].other.r, holes[i].other.c]
+          this.body[this.head] = h
+          break
+        }
+      }
+    }
     let tl = this.game.getTileAt(h[1] + this.nextDir[1], h[0] + this.nextDir[0])
     if (tl !== WALL_ID) {
       this.dir = this.nextDir
@@ -147,16 +158,15 @@ export default class Snake {
     }
 
     // replace head with body
-    const prevHead = this.body[this.head]
-    const prevHeadTl = this.game.getTileAt(prevHead[1], prevHead[0])
     this.head++
     if (this.head === this.body.length) {
       this.head = 0
     }
     this.body[this.head] = [h[0] + this.dir[0], h[1] + this.dir[1]]
-    const tls = headMap.get(this.dir[0] + '_' + this.dir[1] + '_' + prevHeadTl)
-    this.game.putTileAt(tls[1], prevHead[1], prevHead[0])
+    const tls = headMap.get(this.dir[0] + '_' + this.dir[1] + '_' + this.lastHeadTile)
+    this.game.putTileAt(tls[1], h[1], h[0])
     this.game.putTileAt(tls[0], this.body[this.head][1], this.body[this.head][0])
+    this.lastHeadTile = tls[0]
     return true
   }
 
