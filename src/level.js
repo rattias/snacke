@@ -8,9 +8,9 @@ const DATA = [
   { eggs: { brown: 10, white: 2, blue: 1, gold: 1, black: 2 }, hwalls: 4, vwalls: 4, holes: 2 },
   { eggs: { brown: 6, white: 4, blue: 4, gold: 0, black: 3 }, hwalls: 5, vwalls: 5, holes: 4 },
   { eggs: { brown: 6, white: 4, blue: 4, gold: 0, black: 3 }, hwalls: 5, vwalls: 5, holes: 4 },
-  { eggs: { brown: 4, white: 2, blue: 1, gold: 1, black: 3 }, hwalls: 5, vwalls: 5, dyn_eggs: 2, dyn_delay: 2000 },
-  { eggs: { brown: 6, white: 2, blue: 1, gold: 1, black: 3 }, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 1000 },
-  { eggs: { brown: 8, white: 2, blue: 1, gold: 1, black: 4 }, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 1000 }
+  { eggs: { brown: 4, white: 2, blue: 1, gold: 1, }, hwalls: 5, vwalls: 5, dyn_eggs: 2, dyn_delay: 2000 },
+  { eggs: { brown: 6, white: 2, blue: 1, gold: 1, }, hwalls: 5, vwalls: 5, dyn_eggs: 1, dyn_delay: 1000 },
+  { eggs: { brown: 8, white: 2, blue: 1, gold: 1 }, hwalls: 5, vwalls: 5, holes: 6, dyn_eggs: 1, dyn_delay: 1000 }
 ]
 
 export default class Level {
