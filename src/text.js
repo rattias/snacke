@@ -2,7 +2,7 @@ import {
   EGG_BROWN_ID, EGG_WHITE_ID, EGG_BLUE_ID, EGG_GOLD_ID, EGG_BLACK_ID,
   EGG_BROWN_VALUE, EGG_WHITE_VALUE, EGG_BLUE_VALUE, EGG_GOLD_VALUE,
   EGG_BROWN_LEN_INC, EGG_WHITE_LEN_INC, EGG_BLUE_LEN_INC, EGG_GOLD_LEN_INC,
-  DEFAULT_WIDTH
+  DEFAULT_WIDTH, VER
 } from './constants.js'
 import { isMobile, energyFromValue } from './util.js'
 
@@ -30,7 +30,7 @@ export function mkText (scene, x, y, text, config) {
 }
 
 export function textSnacke (scene) {
-  const txt = mkText(scene, scene.cameras.main.centerX, 100, 'SNAcKE', GAME_OVER_TEXT_STYLE)
+  const txt = mkText(scene, scene.cameras.main.centerX, 100, 'SNAcKE v' + VER, GAME_OVER_TEXT_STYLE)
   txt.setOrigin(0.5)
   return txt
 }

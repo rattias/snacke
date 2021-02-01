@@ -154,12 +154,14 @@ export default class Game extends Phaser.Scene {
       txt[i].setOrigin(0.5)
       timeline.add({ targets: txt[i], scale: { from: 0, to: 1 }, alpha: { from: 0, to: 1 }, ease: 'Power1', duration: 500, repeat: 0, yoyo: true })
     }
+    const scene = this
     timeline.on('complete', function () {
       this.running = true
       lvl.destroy()
-      for (let i = 0; i < msg.length; i++) {
+      for (let i = 0; i < txt.length; i++) {
         txt[i].destroy()
       }
+      scene.levelStartTime = new Date()
     }, this)
     timeline.play()
   }
@@ -196,7 +198,7 @@ export default class Game extends Phaser.Scene {
       this.addEggs(lv.eggs.gold, EGG_GOLD_ID)
       this.addEggs(lv.eggs.black, EGG_BLACK_ID)
       // don't include black eggs
-      this.eggs = this.lv.eggs.brown + this.lv.eggs.white + this.lv.eggs.blue + this.lv.eggs.gold
+      this.eggs = Level.mustEatEggCount(this.lv)
     }
   }
 
@@ -262,6 +264,51 @@ export default class Game extends Phaser.Scene {
     }
   }
 
+  levelCompleted () {
+    const elapsedSec = Math.floor((new Date() - this.levelStartTime) / 1000)
+    const timeBonus = Math.max(Level.mustEatEggCount(this.lv) * 8 - elapsedSec, 0) * 10
+    const energyBonus = Math.floor(this.energy * 1000)
+    this.music.destroy()
+    this.sound.play('success_sound')
+    this.running = false
+    const mazeCenterX = (this.lo.mazeX + this.lo.mazeWidth) / 2
+    const mazeCenterY = (this.lo.mazeY + this.lo.mazeHeight) / 2
+    const t0 = mkText(this, mazeCenterX, mazeCenterY, 'Level Completed', { fontFamily: 'Arial Black', fontSize: 80 }).setAlpha(0).setOrigin(0.5, 0)
+    const tw0 = this.tweens.add({ targets: t0, alpha: { from: 0, to: 1 }, ease: 'Linear', duration: 500, repeat: 0 })
+    const scene = this
+    const maxV = Math.max(timeBonus, energyBonus)
+    const h1 = function (tw, tgts) {
+      const t1 = mkText(this, mazeCenterX, t0.y + t0.height + 10, 'Time Bonus: 0', { fontFamily: 'Arial Black', fontSize: 50, color: '#00FF00' }).setOrigin(0.5, 0)
+      const t2 = mkText(this, mazeCenterX, t1.y + t1.height + 10, 'Energy Bonus: 0', { fontFamily: 'Arial Black', fontSize: 50, color: '#00FFFF' }).setOrigin(0.5, 0)
+      let v = 0
+      scene.time.addEvent({
+        delay: 10,
+        callback: function () {
+          if (v === -1) {
+            return
+          }
+          t1.text = 'Time Bonus: ' + Math.min(v, timeBonus)
+          t2.text = 'Energy Bonus: ' + Math.min(v, energyBonus)
+          v += 10
+          if (v >= timeBonus && v >= energyBonus) {
+            v = -1
+            console.log('tw1 completed')
+            scene.time.delayedCall(3000, function () {
+              t0.destroy()
+              t1.destroy()
+              t2.destroy()
+              scene.score += timeBonus + energyBonus
+              this.scoreTxt.setText('Score: ' + this.score)
+              scene._nextLevel()
+            }, [], scene)
+          }
+        },
+        repeat: maxV / 10
+      })
+    }
+    tw0.on('complete', h1, this)
+  }
+
   update (time, delta) {
     if (DEBUG_FPS) {
       this.fps.setText(Math.round(this.game.loop.actualFps) + 'FPS')
@@ -271,10 +318,10 @@ export default class Game extends Phaser.Scene {
     }
     if (this.eggs === 0) {
       if (this.eggsToAdd.length === 0) {
-        this.music.destroy()
-        this.sound.play('success_sound')
-        this.running = false
-        this.time.delayedCall(3000, this._nextLevel, [], this)
+        this.resetEffect()
+        this.updateEnergyBar()
+        this.levelCompleted()
+        return
       } else {
         this.addEggDelay -= delta
         if (this.addEggDelay <= 0) {

@@ -19,7 +19,6 @@ export default class Level {
      * @param {number idx} level index
      */
   static _makeMaze (idx, lo) {
-    console.log(JSON.stringify(lo))
     const lv = DATA[idx]
     lv.tile_map = new Array(lo.mazeRows)
     lv.background = new Array(lo.mazeRows)
@@ -91,5 +90,9 @@ export default class Level {
 
   static isLast (idx) {
     return idx === DATA.length - 1
+  }
+
+  static mustEatEggCount (level) {
+    return level.eggs.brown + level.eggs.white + level.eggs.blue + level.eggs.gold
   }
 }

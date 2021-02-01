@@ -1,3 +1,4 @@
+export const VER = '0.9'
 export const TILE_WIDTH = 32
 export const TILE_HEIGHT = 32
 export const HEADER_ROWS = 2

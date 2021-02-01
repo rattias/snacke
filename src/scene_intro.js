@@ -16,15 +16,8 @@ export default class Intro extends Phaser.Scene {
   }
 
   create () {
-    /*
-    const game = this.game
-    this.events.once('once') {
-      game.origGameWidth = game.width
-      game.origGameHeight = game.height
-    }*/
     this.scale.setGameSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
-    console.log("### crating intro scene")
     mkText(this, 0, 0, window.innerWidth + 'X' + window.innerHeight).setOrigin(0)
     const title = textSnacke(this)
     const desc = textDescription(this)
