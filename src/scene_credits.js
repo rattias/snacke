@@ -19,6 +19,7 @@ export default class Credits extends Phaser.Scene {
     const r0 = this.add.text(SCREEN_WIDTH / 2, 0, 'CREDITS', { fontFamily: 'Arial Black', fontSize: 80, color: '#FF0000', stroke: '#FFFFFF', strokeThickness: 3 }).setOrigin(0.5, 0)
     const txt = [
       ['Developed by:', 'rattias', REPO],
+      ['Graphics by:', 'Carlo Santagostino', 'https://santagostino.eu']
       ['Music by:', 'Michael-DB', 'https://freesound.org/people/Michael-DB/sounds/489035/'],
       ['Sound FX by:', 'Leszek_Szary', 'https://freesound.org/people/Leszek_Szary/sounds/171670/'],
       ['', 'NillyPlays', 'https://freesound.org/people/NillyPlays/sounds/543386/'],

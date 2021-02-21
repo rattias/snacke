@@ -7,7 +7,8 @@ import { TILE_WIDTH, TILE_HEIGHT, HEADER_ROWS, EGG_BLACK_ID, LIFE_ID, EGG_BLUE_I
 
 import Keypad from './keypad.js'
 
-const HEADER_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: 32, color: '#3030FF' }
+const HEADER_TEXT_STYLE = { fontFamily: 'Arial Black', fontSize: 32, color: '#FFFFFF' }
+const HEADER_VALUE_STYLE = { fontFamily: 'Arial Black', fontSize: 32, color: '#FF0000' }
 const DEFAULT_SNAKE_SPEED_TILES_PER_SEC = 10
 const DEBUG_FPS = true
 
@@ -33,6 +34,7 @@ export default class Game extends Phaser.Scene {
     this.load.spritesheet('sprites', 'assets/tiles.png', { frameWidth: 34, frameHeight: 34 })
     this.load.spritesheet('fullscreen', 'assets/fullscreen-white.png', { frameWidth: 64, frameHeight: 64 })
     this.load.image('redball', 'assets/redball.png')
+    this.load.html('nameform', 'assets/input_name.html');
   }
 
   _mazeSide (isles, bushSize) {
@@ -81,19 +83,44 @@ export default class Game extends Phaser.Scene {
     res.mazeY = res.headerHeight
 
     res.scoreTxtX = 10
-    res.scoreTxtY = res.mazeY / 2
+    res.scoreTxtY = 0
     res.scoreTxtOX = 0
-    res.scoreTxtOY = 0.5
+    res.scoreTxtOY = 0
+
+    res.scoreValX = 10
+    res.scoreValY = res.headerHeight / 2
+    res.scoreValOX = 0
+    res.scoreValOY = 0
+
+    res.hScoreTxtX = res.mazeX + res.mazeWidth / 4 - 1
+    res.hScoreTxtY = 0
+    res.hScoreTxtOX = 0
+    res.hScoreTxtOY = 0
+
+    res.hScoreValX = res.mazeX + res.mazeWidth / 4 - 1
+    res.hScoreValY = res.mazeY / 2
+    res.hScoreValOX = 0
+    res.hScoreValOY = 0
+
+    res.livesTxtX = res.mazeX + res.mazeWidth * 3 / 5 - 1
+    res.livesTxtY = 0
+    res.livesTxtOX = 0
+    res.livesTxtOY = 0
+
+    res.livesX = res.livesTxtX
+    res.livesY = res.mazeY / 2
+    res.livesOX = 0
+    res.livesOY = 0
 
     res.levelTxtX = res.mazeX + res.mazeWidth - 1
-    res.levelTxtY = res.scoreTxtY
+    res.levelTxtY = 0
     res.levelTxtOX = 1
-    res.levelTxtOY = 0.5
+    res.levelTxtOY = 0
 
-    res.livesX = res.mazeX + res.mazeWidth / 2
-    res.livesY = res.scoreTxtY
-    res.livesOX = 0
-    res.livesOY = 0.5
+    res.levelValX = res.mazeX + res.mazeWidth - 1
+    res.levelValY = res.mazeY / 2
+    res.levelValOX = 1
+    res.levelValOY = 0
 
     res.energyBarX = res.mazeX + res.mazeWidth
     res.energyBarY = res.mazeY + res.mazeHeight - 1
@@ -125,7 +152,7 @@ export default class Game extends Phaser.Scene {
     this.bgLayer.putTilesAt(this.lv.background, 0, 0, true)
     this.mazeLayer.putTilesAt(this.lv.tile_map, 0, 0, true)
     this.fgLayer.fill(EMPTY_ID, 0, 0, this.lo.mazeCols, this.lo.mazeRows)
-    this.levelTxt.setText('Level: ' + (this.level + 1))
+    this.levelVal.setText('' + (this.level + 1))
     this.snake = new Snake(this)
     // update lives
     for (let i = 0; i < 3; i++) {
@@ -202,14 +229,27 @@ export default class Game extends Phaser.Scene {
     }
   }
 
+  formatScore (v) {
+    return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+
   create () {
     const lo = this._layout(this.scale.gameSize)
     this.scale.setGameSize(lo.width, lo.height)
 
     this.cameras.main.fadeIn(500, 0, 0, 0)
     // setup score and level headers
-    this.scoreTxt = mkText(this, lo.scoreTxtX, lo.scoreTxtY, 'Score: 0', HEADER_TEXT_STYLE).setOrigin(lo.scoreTxtOX, lo.scoreTxtOY)
-    this.levelTxt = mkText(this, lo.levelTxtX, lo.levelTxtY, 'Level: 1', HEADER_TEXT_STYLE).setOrigin(lo.levelTxtOX, lo.levelTxtOY)
+    const tok = window.localStorage.getItem('high-score')
+    this.highScore = (tok === null) ? 0 : parseInt(tok)
+
+    this.scoreTxt = mkText(this, lo.scoreTxtX, lo.scoreTxtY, 'Score', HEADER_TEXT_STYLE).setOrigin(lo.scoreTxtOX, lo.scoreTxtOY)
+    this.scoreVal = mkText(this, lo.scoreValX, lo.scoreValY, '0', HEADER_VALUE_STYLE).setOrigin(lo.scoreValOX, lo.scoreValOY)
+    this.hScoreTxt = mkText(this, lo.hScoreTxtX, lo.hScoreTxtY, 'High Score', HEADER_TEXT_STYLE).setOrigin(lo.hScoreTxtOX, lo.hScoreTxtOY)
+    this.hScoreVal = mkText(this, lo.hScoreValX, lo.hScoreValY, this.formatScore(this.highScore), HEADER_VALUE_STYLE).setOrigin(lo.hScoreValOX, lo.hScoreValOY)
+    this.livesTxt = mkText(this, lo.livesTxtX, lo.livesTxtY, 'Lives', HEADER_TEXT_STYLE).setOrigin(lo.livesTxtOX, lo.livesTxtOY)
+    console.log(this.livesTxt)
+    this.levelTxt = mkText(this, lo.levelTxtX, lo.levelTxtY, 'Level', HEADER_TEXT_STYLE).setOrigin(lo.levelTxtOX, lo.levelTxtOY)
+    this.levelVal = mkText(this, lo.levelValX, lo.levelValY, '1', HEADER_VALUE_STYLE).setOrigin(lo.levelValOX, lo.levelValOY)
 
     // setup lives display
     this.livesImg = []
@@ -249,6 +289,7 @@ export default class Game extends Phaser.Scene {
       this.fps = mkText(this, 0, this.lo.height, '0', { fontSize: 50 })
       this.fps.setOrigin(0, 1)
     }
+    //this.recordHighScore()
   }
 
   /**
@@ -298,7 +339,7 @@ export default class Game extends Phaser.Scene {
               t1.destroy()
               t2.destroy()
               scene.score += timeBonus + energyBonus
-              this.scoreTxt.setText('Score: ' + this.score)
+              this.scoreVal.setText(this.formatScore(this.score))
               scene._nextLevel()
             }, [], scene)
           }
@@ -377,6 +418,27 @@ export default class Game extends Phaser.Scene {
     this.energyBar.setOrigin(0, 1)
   }
 
+  recordHighScore () {
+    const element = this.add.dom(400, 600).createFromCache('nameform')
+    element.setPerspective(800);
+    element.addListener('click')
+    element.on('click', function (event) {
+      if (event.target.name === 'loginButton') {
+        const name = this.getChildByName('name')
+        if (name.value !== '') {
+          this.removeListener('click')
+
+          //  Tween the form out
+          this.scene.tweens.add({ targets: element.rotate3d, x: 1, w: 90, duration: 3000, ease: 'Power3' });
+          this.scene.tweens.add({ targets: element, scaleX: 2, scaleY: 2, y: 700, duration: 3000, ease: 'Power3', onComplete: function () { element.setVisible(false) } });
+
+          //  Populate the text with whatever they typed in as the username!
+          window.localStorage.setItem('high-score-user', name.value)
+        }
+      }
+    })
+  }
+
   /**
      * handles death of the snake
      */
@@ -385,8 +447,14 @@ export default class Game extends Phaser.Scene {
     this.music.destroy()
     this.sound.play('death_sound')
     this.music = null
+    const scene = this
     if (this.lives === 0) {
-      textGameOver(this)
+      const onComplete = function () {
+        if (scene.score > scene.highScore) {
+          window.localStorage.setItem('high-score', scene.score)
+        }
+      }
+      textGameOver(this, onComplete)
       this.time.delayedCall(3000, switchToScene, [this, 'intro'])
     } else {
       this.time.delayedCall(3000, this._setupLevel, [], this)
@@ -533,6 +601,6 @@ export default class Game extends Phaser.Scene {
     }
     this.score += Math.floor(value)
     this.score += Math.floor(value)
-    this.scoreTxt.setText('Score: ' + this.score)
+    this.scoreVal.setText(this.formatScore(this.score))
   }
 }

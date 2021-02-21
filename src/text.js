@@ -93,10 +93,12 @@ export function textWon (scene) {
   return txt
 }
 
-export function textGameOver (scene) {
+export function textGameOver (scene, onCompleteCallback) {
   const gameOver = mkText(scene, scene.lo.width / 2, (scene.lo.mazeY + scene.lo.mazeHeight) / 2, 'Game Over', GAME_OVER_TEXT_STYLE)
   gameOver.setAlpha(0.0)
   gameOver.setOrigin(0.5)
-  scene.tweens.add(tweenConfig(gameOver))
+  const twc = tweenConfig(gameOver)
+  twc.onComplete = onCompleteCallback
+  scene.tweens.add(twc)
   return gameOver
 }
