@@ -42,6 +42,10 @@ export default class Game extends Phaser.Scene {
   }
 
   _layout (size) {
+    const MORE_ISLES = 8 // 5 //8
+    const LESS_ISLES = 6 // 4 //6
+    const LONG_BUSH = 4 // 3 //4
+    const SHORT_BUSH = 3 // 2 //3
     const res = {}
     res.headerHeight = HEADER_ROWS * TILE_HEIGHT
     res.mazeX = 0
@@ -53,26 +57,26 @@ export default class Game extends Phaser.Scene {
     // the opposite.
     const ar = (window.innerHeight * mazeVsKeypadHeightPercent) / window.innerWidth
     if (ar > 1) {
-      res.hIsles = 8
-      res.vIsles = 6
-      if (Math.abs(this._mazeSide(8, 3) / this._mazeSide(6, 4) - ar) <
-        Math.abs(this._mazeSide(8, 4) / this._mazeSide(6, 3) - ar)) {
-        res.bushCols = 4
-        res.bushRows = 3
+      res.hIsles = MORE_ISLES
+      res.vIsles = LESS_ISLES
+      if (Math.abs(this._mazeSide(MORE_ISLES, SHORT_BUSH) / this._mazeSide(LESS_ISLES, LONG_BUSH) - ar) <
+        Math.abs(this._mazeSide(MORE_ISLES, LONG_BUSH) / this._mazeSide(LESS_ISLES, SHORT_BUSH) - ar)) {
+        res.bushCols = LONG_BUSH
+        res.bushRows = SHORT_BUSH
       } else {
-        res.bushCols = 3
-        res.bushRows = 4
+        res.bushCols = SHORT_BUSH
+        res.bushRows = LONG_BUSH
       }
     } else {
-      res.hIsles = 6
-      res.vIsles = 8
-      if (Math.abs(this._mazeSide(6, 3) / this._mazeSide(8, 4) - ar) <
-        Math.abs(this._mazeSide(6, 4) / this._mazeSide(8, 3) - ar)) {
-        res.bushCols = 4
-        res.bushRows = 3
+      res.hIsles = LESS_ISLES
+      res.vIsles = MORE_ISLES
+      if (Math.abs(this._mazeSide(LESS_ISLES, SHORT_BUSH) / this._mazeSide(MORE_ISLES, LONG_BUSH) - ar) <
+        Math.abs(this._mazeSide(LESS_ISLES, LONG_BUSH) / this._mazeSide(MORE_ISLES, SHORT_BUSH) - ar)) {
+        res.bushCols = LONG_BUSH
+        res.bushRows = SHORT_BUSH
       } else {
-        res.bushCols = 3
-        res.bushRows = 4
+        res.bushCols = SHORT_BUSH
+        res.bushRows = LONG_BUSH
       }
     }
     res.mazeCols = this._mazeSide(res.vIsles, res.bushCols)
@@ -239,8 +243,13 @@ export default class Game extends Phaser.Scene {
 
     this.cameras.main.fadeIn(500, 0, 0, 0)
     // setup score and level headers
-    const tok = window.localStorage.getItem('high-score')
-    this.highScore = (tok === null) ? 0 : parseInt(tok)
+    try {
+      const tok = window.localStorage.getItem('high-score')
+      this.highScore = (!tok) ? 0 : parseInt(tok)
+    } catch (ex) {
+      console.log('exception while accessing local storage.')
+      this.highScore = 0
+    }
 
     this.scoreTxt = mkText(this, lo.scoreTxtX, lo.scoreTxtY, 'Score', HEADER_TEXT_STYLE).setOrigin(lo.scoreTxtOX, lo.scoreTxtOY)
     this.scoreVal = mkText(this, lo.scoreValX, lo.scoreValY, '0', HEADER_VALUE_STYLE).setOrigin(lo.scoreValOX, lo.scoreValOY)
@@ -433,7 +442,9 @@ export default class Game extends Phaser.Scene {
           this.scene.tweens.add({ targets: element, scaleX: 2, scaleY: 2, y: 700, duration: 3000, ease: 'Power3', onComplete: function () { element.setVisible(false) } });
 
           //  Populate the text with whatever they typed in as the username!
-          window.localStorage.setItem('high-score-user', name.value)
+          try {
+            window.localStorage.setItem('high-score-user', name.value)
+          } catch (ex) {}
         }
       }
     })
@@ -451,7 +462,9 @@ export default class Game extends Phaser.Scene {
     if (this.lives === 0) {
       const onComplete = function () {
         if (scene.score > scene.highScore) {
-          window.localStorage.setItem('high-score', scene.score)
+          try {
+            window.localStorage.setItem('high-score', scene.score)
+          } catch (ex) {}
         }
       }
       textGameOver(this, onComplete)
