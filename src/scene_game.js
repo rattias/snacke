@@ -42,10 +42,10 @@ export default class Game extends Phaser.Scene {
   }
 
   _layout (size) {
-    const MORE_ISLES = 8 // 5 //8
-    const LESS_ISLES = 6 // 4 //6
-    const LONG_BUSH = 4 // 3 //4
-    const SHORT_BUSH = 3 // 2 //3
+    const MORE_ISLES = isMobile(this) ? 5 : 8
+    const LESS_ISLES = isMobile(this) ? 4 : 6
+    const LONG_BUSH = isMobile(this) ? 3 : 4
+    const SHORT_BUSH = isMobile(this) ? 2 : 3
     const res = {}
     res.headerHeight = HEADER_ROWS * TILE_HEIGHT
     res.mazeX = 0
