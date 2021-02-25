@@ -2,7 +2,7 @@ import { GRASS_ID, WALL_ID, EMPTY_ID } from './constants.js'
 
 import { randomize } from './util.js'
 const DATA = [
-  { eggs: { brown: 4, white: 2, blue: 1, gold: 1, black: 1 }, hwalls: 1, vwalls: 1 },
+  { eggs: { brown: 4, white: 2, blue: 1, gold: 1, black: 1 }, hwalls: 10, vwalls: 10 },
   { eggs: { brown: 6, white: 2, blue: 1, gold: 0, black: 1 }, hwalls: 2, vwalls: 2 },
   { eggs: { brown: 8, white: 2, blue: 1, gold: 1, black: 2 }, hwalls: 3, vwalls: 3, holes: 2 },
   { eggs: { brown: 10, white: 2, blue: 1, gold: 1, black: 2 }, hwalls: 4, vwalls: 4, holes: 2 },
@@ -48,15 +48,25 @@ export default class Level {
       }
     }
     // creates an array of sz entries, where each entry is
-    // an object with a index (between 0 and sz-1) and
-    // a value (between 0 and range-1). the elements are
-    // randomized
+    // an object with a different index (between 0 and sz-1) and
+    // a different value (between 0 and range-1). The elements are
+    // randomized. If sz < range, then values can repeat, but
+    // never close to each other, to avoid a situation where we
+    // end up with closed streets
     const randPos = function (sz, range) {
-      const arr = new Array(sz)
-      for (let i = 0; i < sz; i++) {
-        arr[i] = { index: i, value: Math.floor(Math.random() * range) }
+      const indices = Array.from(Array(sz).keys())
+      let values = Array.from(Array(range).keys())
+      values = randomize(values)
+      const res = Array(sz)
+      let j = 0
+      for (let i = 0; i < res.length; i++) {
+        res[i] = { index: indices[i], value: values[j]}
+        j++
+        if (j === values.length) {
+          j = 0
+        }
       }
-      return randomize(arr)
+      return randomize(res)
     }
     const numBushCols = lo.vIsles - 1
     const numBushRows = lo.hIsles - 1
